@@ -1,5 +1,5 @@
 // Configurações da API
-const API_BASE = 'glowered-store-backend-production.up.railway.app';
+const API_BASE = '/api';
 
 // Verificar se usuário está logado
 function verificarLogin() {
@@ -67,7 +67,7 @@ async function login(email, senha) {
 // Fazer cadastro
 async function cadastrar(usuarioData) {
     try {
-        const response = await fetch(`/api/clientes`, {
+        const response = await fetch(`${API_BASE}/clientes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
