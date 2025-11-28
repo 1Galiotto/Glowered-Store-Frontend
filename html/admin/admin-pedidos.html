@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glowered Store - Gerenciar Pedidos">
+    <meta name="keywords" content="admin, pedidos, vendas, glowered">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../../js/auth.js" defer></script>
+    <script src="../../js/admin-pedidos.js" defer></script>
+    <title>Glowered Store - Gerenciar Pedidos</title>
+</head>
+
+<body class="admin-body">
+    <!-- Header Admin -->
+    <header class="admin-header">
+        <nav aria-label="Navegação administrativa">
+            <div class="admin-nav-container">
+                <!-- Logo e Título -->
+                <div class="admin-logo" role="banner">
+                    <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="45"
+                        height="45">
+                    <div>
+                        <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                        <span class="admin-badge">PEDIDOS</span>
+                    </div>
+                </div>
+
+                <!-- Menu Principal -->
+                <div class="admin-menu">
+                    <a href="admin-dashboard.html" class="menu-item">📊 Dashboard</a>
+                    <a href="admin-produtos.html" class="menu-item">🛍️ Produtos</a>
+                    <a href="admin-estoque.html" class="menu-item">📦 Estoque</a>
+                    <a href="admin-pedidos.html" class="menu-item active">📋 Pedidos</a>
+                    <a href="admin-clientes.html" class="menu-item">👥 Clientes</a>
+                    <a href="admin-entregas.html" class="menu-item">🚚 Entregas</a>
+                    <a href="admin-cupons.html" class="menu-item">🎫 Cupons</a>
+                    <a href="../../index.html" class="menu-item">🏠 Home</a>
+                </div>
+
+                <!-- Ações do Admin -->
+                <div class="admin-actions">
+                    <button id="admin-logout" class="btn-logout" aria-label="Sair do sistema">
+                        <img src="https://img.icons8.com/fluency/96/exit.png" alt="Sair">
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="admin-main">
+        <!-- Hero Section -->
+        <section class="admin-hero">
+            <div class="hero-content">
+                <h1>GERENCIAR <span class="brand-purple">PEDIDOS</span></h1>
+                <p class="hero-subtitle">Visualize e gerencie todos os pedidos da loja</p>
+                <div class="admin-info">
+                    <span id="total-pedidos-info">Carregando...</span>
+                    <span id="current-time"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" class="admin-loading">
+            <p>🌀 CARREGANDO PEDIDOS...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="admin-error" style="display: none;">
+            <p>❌ ERRO AO CARREGAR PEDIDOS</p>
+            <button class="btn btn-primary" onclick="carregarPedidos()">TENTAR NOVAMENTE</button>
+        </div>
+
+        <!-- Filtros e Ações -->
+        <section class="filters-section">
+            <div class="filters-container">
+                <!-- Filtro por Status -->
+                <div class="filter-group">
+                    <label for="filtro-status">Status:</label>
+                    <select id="filtro-status" onchange="filtrarPedidos()">
+                        <option value="todos">Todos os Status</option>
+                        <option value="Pendente">🟡 Pendente</option>
+                        <option value="Processando">🔵 Processando</option>
+                        <option value="Enviado">🚚 Enviado</option>
+                        <option value="Entregue">✅ Entregue</option>
+                        <option value="Cancelado">❌ Cancelado</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Data -->
+                <div class="filter-group">
+                    <label for="filtro-data">Período:</label>
+                    <select id="filtro-data" onchange="filtrarPedidos()">
+                        <option value="todos">Todo Período</option>
+                        <option value="hoje">Hoje</option>
+                        <option value="semana">Esta Semana</option>
+                        <option value="mes" selected>Este Mês</option>
+                        <option value="ano">Este Ano</option>
+                    </select>
+                </div>
+
+                <!-- Busca -->
+                <div class="filter-group">
+                    <label for="busca-pedido">Buscar:</label>
+                    <input type="text" id="busca-pedido" placeholder="ID, cliente, produto..."
+                        oninput="filtrarPedidos()">
+                </div>
+
+                <!-- Ações em Lote -->
+                <div class="actions-group">
+                    <button class="btn btn-secondary" onclick="atualizarStatusEmLote()">
+                        📦 Atualizar Status
+                    </button>
+                    <button class="btn btn-primary" onclick="exportarPedidos()">
+                        📊 Exportar
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Estatísticas Rápidas -->
+        <section class="quick-stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon pendente">🟡</div>
+                    <div class="stat-info">
+                        <h3 id="count-pendentes">0</h3>
+                        <p>Pendentes</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon processando">🔵</div>
+                    <div class="stat-info">
+                        <h3 id="count-processando">0</h3>
+                        <p>Processando</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon enviado">🚚</div>
+                    <div class="stat-info">
+                        <h3 id="count-enviados">0</h3>
+                        <p>Enviados</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon entregue">✅</div>
+                    <div class="stat-info">
+                        <h3 id="count-entregues">0</h3>
+                        <p>Entregues</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon total">💰</div>
+                    <div class="stat-info">
+                        <h3 id="total-vendas">R$ 0</h3>
+                        <p>Total Vendido</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista de Pedidos -->
+        <section class="orders-section">
+            <div class="section-header">
+                <h2>LISTA DE PEDIDOS</h2>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="carregarPedidos()">
+                        🔄 Atualizar
+                    </button>
+                    <span id="contador-pedidos">0 pedidos</span>
+                </div>
+            </div>
+
+            <div class="orders-container">
+                <div id="lista-pedidos" class="orders-list">
+                    <!-- Pedidos serão carregados via JavaScript -->
+                    <div class="loading-item">Carregando pedidos...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Detalhes do Pedido -->
+    <div id="modal-pedido" class="modal" style="display: none;">
+        <div class="modal-content admin-modal large-modal">
+            <div class="modal-header">
+                <h3 id="modal-pedido-titulo">DETALHES DO PEDIDO</h3>
+                <button class="modal-close" onclick="fecharModalPedido()">×</button>
+            </div>
+            <div class="modal-body" id="modal-pedido-body">
+                <!-- Conteúdo será carregado via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Atualizar Status -->
+    <div id="modal-status" class="modal" style="display: none;">
+        <div class="modal-content admin-modal">
+            <div class="modal-header">
+                <h3>ATUALIZAR STATUS</h3>
+                <button class="modal-close" onclick="fecharModalStatus()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="novo-status">Novo Status:</label>
+                    <select id="novo-status">
+                        <option value="Pendente">🟡 Pendente</option>
+                        <option value="Processando">🔵 Processando</option>
+                        <option value="Enviado">🚚 Enviado</option>
+                        <option value="Entregue">✅ Entregue</option>
+                        <option value="Cancelado">❌ Cancelado</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="fecharModalStatus()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="confirmarAtualizacaoStatus()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="admin-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store - Admin</h3>
+                <p>Gerenciamento de pedidos</p>
+            </div>
+            <div class="footer-section">
+                <p><strong>Última atualização:</strong> <span id="last-update">--:--:--</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Verificar admin e carregar pedidos
+        document.addEventListener('DOMContentLoaded', function () {
+            const admin = verificarAdmin();
+            if (!admin) return;
+            carregarPedidos();
+            atualizarTempo();
+            setInterval(atualizarTempo, 1000);
+        });
+
+        function atualizarTempo() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('pt-BR');
+            document.getElementById('last-update').textContent = now.toLocaleTimeString('pt-BR');
+        }
+
+        // Configurar logout
+        document.getElementById('admin-logout').addEventListener('click', function () {
+            if (confirm('Deseja sair do sistema administrativo?')) {
+                logout();
+            }
+        });
+
+        // Fechar modais ao clicar fora
+        document.getElementById('modal-pedido').addEventListener('click', function (e) {
+            if (e.target === this) fecharModalPedido();
+        });
+        document.getElementById('modal-status').addEventListener('click', function (e) {
+            if (e.target === this) fecharModalStatus();
+        });
+    </script>
+</body>
+
+</html>

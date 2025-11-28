@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glowered Store - Cadastrar Produto">
+    <meta name="keywords" content="admin, produtos, cadastro, glowered">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../../js/auth.js" defer></script>
+    <script src="../../js/admin-produtos.js" defer></script>
+    <title>Glowered Store - Cadastrar Produto</title>
+</head>
+
+<body>
+    <header>
+        <nav aria-label="Navegação principal">
+            <div class="nav-container">
+                <!-- Logo e Título à esquerda -->
+                <div id="imgTitle" role="banner">
+                    <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="50" height="50">
+                    <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                </div>
+                
+                <!-- Nome da página no centro -->
+                <div class="search-container" style="justify-content: center;">
+                    <h2 style="color: var(--accent3); margin: 0;">CADASTRAR PRODUTO</h2>
+                </div>
+
+                <!-- Ações do usuário à direita -->
+                <div class="header-actions">
+                    <button id="backButton" aria-label="Voltar" style="background: none; border: 2px solid var(--accent3); padding: 0.5rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s ease;">
+                        <img src="https://img.icons8.com/fluency/96/back.png" alt="Voltar" style="width: 20px; height: 20px; filter: invert();">
+                    </button>
+                    
+                    <button id="logoutButton" aria-label="Sair da conta" style="background: none; border: 2px solid var(--accent1); padding: 0.5rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s ease;">
+                        <img src="https://img.icons8.com/fluency/96/exit.png" alt="Sair" style="width: 20px; height: 20px; filter: invert();">
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" aria-labelledby="page-title">
+            <div class="hero-content">
+                <h2 id="page-title">CADASTRAR <span class="brand-purple">PRODUTO</span></h2>
+                <p class="hero-subtitle">Adicione novos produtos ao catálogo</p>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" style="text-align: center; padding: 2rem; display: none;">
+            <p style="color: var(--accent3); font-family: 'Share Tech Mono', monospace;">
+                🌀 SALVANDO PRODUTO...
+            </p>
+        </div>
+
+        <!-- Mensagens de feedback -->
+        <div id="message" style="display: none; margin: 1rem auto; padding: 1rem; border-radius: var(--radius); text-align: center; max-width: 600px; font-family: 'Share Tech Mono', monospace;"></div>
+
+        <!-- Formulário de Cadastro -->
+        <section class="products-section" style="max-width: 800px; margin: 0 auto;">
+            <div class="profile-card" style="background: var(--panel); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--glass);">
+                <form id="produtoForm">
+                    <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <!-- Coluna 1 -->
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="nome" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">NOME DO PRODUTO *</label>
+                                <input type="text" id="nome" name="nome" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tipo" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">TIPO *</label>
+                                <select id="tipo" name="tipo" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;">
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="camisa">Camisa</option>
+                                    <option value="moletom">Moletom</option>
+                                    <option value="calca">Calça</option>
+                                    <option value="acessorio">Acessório</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cor" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">COR *</label>
+                                <input type="text" id="cor" name="cor" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="preco" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">PREÇO (R$) *</label>
+                                <input type="number" id="preco" name="preco" step="0.01" min="0" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;">
+                            </div>
+                        </div>
+
+                        <!-- Coluna 2 -->
+                        <div class="form-column">
+                            <div class="form-group">
+                                <label for="material" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">MATERIAL *</label>
+                                <input type="text" id="material" name="material" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tamanho" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">TAMANHO *</label>
+                                <input type="text" id="tamanho" name="tamanho" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="promocao" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">PROMOÇÃO (%)</label>
+                                <input type="number" id="promocao" name="promocao" min="0" max="100" style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;" placeholder="Opcional">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="quantidadeInicial" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">ESTOQUE INICIAL</label>
+                                <input type="number" id="quantidadeInicial" name="quantidadeInicial" min="0" style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Campos de linha completa -->
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label for="descricao" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">DESCRIÇÃO *</label>
+                        <textarea id="descricao" name="descricao" rows="3" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace; resize: vertical;"></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label for="imagem" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">URL DA IMAGEM *</label>
+                        <input type="url" id="imagem" name="imagem" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;" placeholder="https://exemplo.com/imagem.jpg">
+                    </div>
+
+                    <!-- Preview da imagem -->
+                    <div id="imagePreview" style="margin-top: 1rem; text-align: center; display: none;">
+                        <p style="color: var(--accent3); margin-bottom: 0.5rem;">PRÉVIA DA IMAGEM:</p>
+                        <img id="previewImage" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: var(--radius); border: 1px solid var(--glass);">
+                    </div>
+
+                    <!-- Ações do formulário -->
+                    <div class="form-actions" style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem;">
+                            🚀 CADASTRAR PRODUTO
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="limparFormulario()" style="padding: 1rem 2rem;">
+                            🗑️ LIMPAR
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store - Admin</h3>
+                <p>Painel administrativo de produtos</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Glowered Store. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Verificar se usuário é admin
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuario = verificarLogin();
+            
+            if (!usuario || usuario.tipo !== 'admin') {
+                alert('Acesso restrito para administradores!');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Configurar botões
+            document.getElementById('backButton').addEventListener('click', function() {
+                window.location.href = './admin-dashboard.html';
+            });
+
+            document.getElementById('logoutButton').addEventListener('click', function() {
+                logout();
+            });
+
+            // Preview de imagem
+            document.getElementById('imagem').addEventListener('input', function(e) {
+                const url = e.target.value;
+                const preview = document.getElementById('imagePreview');
+                const previewImage = document.getElementById('previewImage');
+                
+                if (url) {
+                    previewImage.src = url;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        });
+
+        function limparFormulario() {
+            document.getElementById('produtoForm').reset();
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('message').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

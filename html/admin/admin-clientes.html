@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glowered Store - Gerenciar Clientes">
+    <meta name="keywords" content="admin, clientes, usuários, glowered">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../../js/auth.js" defer></script>
+    <script src="../../js/admin-clientes.js" defer></script>
+    <title>Glowered Store - Gerenciar Clientes</title>
+</head>
+
+<body class="admin-body">
+    <!-- Header Admin -->
+    <header class="admin-header">
+        <nav aria-label="Navegação administrativa">
+            <div class="admin-nav-container">
+                <!-- Logo e Título -->
+                <div class="admin-logo" role="banner">
+                    <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="45" height="45">
+                    <div>
+                        <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                        <span class="admin-badge">CLIENTES</span>
+                    </div>
+                </div>
+                
+                <!-- Menu Principal -->
+                <div class="admin-menu">
+                    <a href="admin-dashboard.html" class="menu-item">📊 Dashboard</a>
+                    <a href="admin-produtos.html" class="menu-item">🛍️ Produtos</a>
+                    <a href="admin-estoque.html" class="menu-item">📦 Estoque</a>
+                    <a href="admin-pedidos.html" class="menu-item">📋 Pedidos</a>
+                    <a href="admin-clientes.html" class="menu-item active">👥 Clientes</a>
+                    <a href="admin-entregas.html" class="menu-item">🚚 Entregas</a>
+                    <a href="admin-cupons.html" class="menu-item">🎫 Cupons</a>
+                    <a href="../../index.html" class="menu-item">🏠 Home</a>
+                </div>
+
+                <!-- Ações do Admin -->
+                <div class="admin-actions">
+                    <button id="admin-logout" class="btn-logout" aria-label="Sair do sistema">
+                        <img src="https://img.icons8.com/fluency/96/exit.png" alt="Sair">
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="admin-main">
+        <!-- Hero Section -->
+        <section class="admin-hero">
+            <div class="hero-content">
+                <h1>GERENCIAR <span class="brand-purple">CLIENTES</span></h1>
+                <p class="hero-subtitle">Administre a base de clientes da loja</p>
+                <div class="admin-info">
+                    <span id="total-clientes-info">Carregando...</span>
+                    <span id="current-time"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" class="admin-loading">
+            <p>🌀 CARREGANDO CLIENTES...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="admin-error" style="display: none;">
+            <p>❌ ERRO AO CARREGAR CLIENTES</p>
+            <button class="btn btn-primary" onclick="carregarClientes()">TENTAR NOVAMENTE</button>
+        </div>
+
+        <!-- Filtros e Ações -->
+        <section class="filters-section">
+            <div class="filters-container">
+                <!-- Filtro por Status -->
+                <div class="filter-group">
+                    <label for="filtro-status">Status:</label>
+                    <select id="filtro-status" onchange="filtrarClientes()">
+                        <option value="todos">Todos os Clientes</option>
+                        <option value="ativo">✅ Ativos</option>
+                        <option value="inativo">❌ Inativos</option>
+                        <option value="admin">👑 Administradores</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Tipo -->
+                <div class="filter-group">
+                    <label for="filtro-tipo">Tipo:</label>
+                    <select id="filtro-tipo" onchange="filtrarClientes()">
+                        <option value="todos">Todos os Tipos</option>
+                        <option value="cliente">👤 Clientes</option>
+                        <option value="admin">👑 Administradores</option>
+                    </select>
+                </div>
+
+                <!-- Busca -->
+                <div class="filter-group">
+                    <label for="busca-cliente">Buscar:</label>
+                    <input type="text" id="busca-cliente" placeholder="Nome, email, CPF..." oninput="filtrarClientes()">
+                </div>
+
+                <!-- Ações -->
+                <div class="actions-group">
+                    <button class="btn btn-primary" onclick="exportarClientes()">
+                        📊 Exportar
+                    </button>
+                    <button class="btn btn-secondary" onclick="criarCliente()">
+                        👤 Novo Cliente
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Estatísticas Rápidas -->
+        <section class="quick-stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon total">👥</div>
+                    <div class="stat-info">
+                        <h3 id="count-total">0</h3>
+                        <p>Total</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon ativo">✅</div>
+                    <div class="stat-info">
+                        <h3 id="count-ativos">0</h3>
+                        <p>Ativos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon inativo">❌</div>
+                    <div class="stat-info">
+                        <h3 id="count-inativos">0</h3>
+                        <p>Inativos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon admin">👑</div>
+                    <div class="stat-info">
+                        <h3 id="count-admins">0</h3>
+                        <p>Administradores</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon novo">🆕</div>
+                    <div class="stat-info">
+                        <h3 id="count-novos">0</h3>
+                        <p>Este Mês</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista de Clientes -->
+        <section class="clients-section">
+            <div class="section-header">
+                <h2>LISTA DE CLIENTES</h2>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="carregarClientes()">
+                        🔄 Atualizar
+                    </button>
+                    <span id="contador-clientes">0 clientes</span>
+                </div>
+            </div>
+
+            <div class="clients-container">
+                <div id="lista-clientes" class="clients-list">
+                    <!-- Clientes serão carregados via JavaScript -->
+                    <div class="loading-item">Carregando clientes...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Detalhes do Cliente -->
+    <div id="modal-cliente" class="modal" style="display: none;">
+        <div class="modal-content admin-modal large-modal">
+            <div class="modal-header">
+                <h3 id="modal-cliente-titulo">DETALHES DO CLIENTE</h3>
+                <button class="modal-close" onclick="fecharModalCliente()">×</button>
+            </div>
+            <div class="modal-body" id="modal-cliente-body">
+                <!-- Conteúdo será carregado via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Cliente -->
+    <div id="modal-editar" class="modal" style="display: none;">
+        <div class="modal-content admin-modal">
+            <div class="modal-header">
+                <h3>EDITAR CLIENTE</h3>
+                <button class="modal-close" onclick="fecharModalEditar()">×</button>
+            </div>
+            <div class="modal-body" id="modal-editar-body">
+                <!-- Formulário será carregado via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="admin-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store - Admin</h3>
+                <p>Gerenciamento de clientes</p>
+            </div>
+            <div class="footer-section">
+                <p><strong>Última atualização:</strong> <span id="last-update">--:--:--</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Verificar admin e carregar clientes
+        document.addEventListener('DOMContentLoaded', function() {
+            const admin = verificarAdmin();
+            if (!admin) return;
+
+            carregarClientes();
+            atualizarTempo();
+            setInterval(atualizarTempo, 1000);
+        });
+
+        function atualizarTempo() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('pt-BR');
+            document.getElementById('last-update').textContent = now.toLocaleTimeString('pt-BR');
+        }
+
+        // Configurar logout
+        document.getElementById('admin-logout').addEventListener('click', function() {
+            if (confirm('Deseja sair do sistema administrativo?')) {
+                logout();
+            }
+        });
+
+        // Fechar modais ao clicar fora
+        document.getElementById('modal-cliente').addEventListener('click', function(e) {
+            if (e.target === this) fecharModalCliente();
+        });
+        document.getElementById('modal-editar').addEventListener('click', function(e) {
+            if (e.target === this) fecharModalEditar();
+        });
+    </script>
+</body>
+</html>

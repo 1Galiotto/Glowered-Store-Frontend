@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glowered Store - Gerenciar Cupons">
+    <meta name="keywords" content="admin, cupons, desconto, glowered">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../../js/auth.js" defer></script>
+    <script src="../../js/admin-cupons.js" defer></script>
+    <title>Glowered Store - Gerenciar Cupons</title>
+</head>
+
+<body>
+    <header>
+        <nav aria-label="Navegação principal">
+            <div class="nav-container">
+                <!-- Logo e Título à esquerda -->
+                <div id="imgTitle" role="banner">
+                    <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="50" height="50">
+                    <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                </div>
+                
+                <!-- Nome da página no centro -->
+                <div class="search-container" style="justify-content: center;">
+                    <h2 style="color: var(--accent3); margin: 0;">GERENCIAR CUPONS</h2>
+                </div>
+
+                <!-- Ações do usuário à direita -->
+                <div class="header-actions">
+                    <button id="backButton" aria-label="Voltar" style="background: none; border: 2px solid var(--accent3); padding: 0.5rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s ease;">
+                        <img src="https://img.icons8.com/fluency/96/back.png" alt="Voltar" style="width: 20px; height: 20px; filter: invert();">
+                    </button>
+                    
+                    <button id="logoutButton" aria-label="Sair da conta" style="background: none; border: 2px solid var(--accent1); padding: 0.5rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s ease;">
+                        <img src="https://img.icons8.com/fluency/96/exit.png" alt="Sair" style="width: 20px; height: 20px; filter: invert();">
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" aria-labelledby="page-title">
+            <div class="hero-content">
+                <h2 id="page-title">GERENCIAR <span class="brand-purple">CUPONS</span></h2>
+                <p class="hero-subtitle">Crie e gerencie cupons de desconto</p>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" style="text-align: center; padding: 2rem; display: none;">
+            <p style="color: var(--accent3); font-family: 'Share Tech Mono', monospace;">
+                🌀 CARREGANDO CUPONS...
+            </p>
+        </div>
+
+        <!-- Mensagens de feedback -->
+        <div id="message" style="display: none; margin: 1rem auto; padding: 1rem; border-radius: var(--radius); text-align: center; max-width: 800px; font-family: 'Share Tech Mono', monospace;"></div>
+
+        <!-- Ações Rápidas -->
+        <section class="products-section" style="max-width: 800px; margin: 0 auto;">
+            <div class="profile-card" style="background: var(--panel); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--glass);">
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="abrirModalCriarCupom()" style="padding: 1rem 1.5rem;">
+                        🎫 CRIAR CUPOM
+                    </button>
+                    <button class="btn btn-secondary" onclick="carregarCupons()" style="padding: 1rem 1.5rem;">
+                        🔄 ATUALIZAR
+                    </button>
+                    <button class="btn btn-secondary" onclick="filtrarCupons('ativos')" style="padding: 1rem 1.5rem;">
+                        ✅ ATIVOS
+                    </button>
+                    <button class="btn btn-secondary" onclick="filtrarCupons('expirados')" style="padding: 1rem 1.5rem;">
+                        📅 EXPIRADOS
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Estatísticas -->
+        <section class="products-section" style="max-width: 800px; margin: 0 auto;">
+            <h3 class="section-title">ESTATÍSTICAS</h3>
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <div class="stat-card" style="background: var(--panel); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--glass); text-align: center;">
+                    <div style="font-size: 2rem; color: var(--accent3);">🎫</div>
+                    <h4 style="color: var(--accent3); margin: 0.5rem 0;">TOTAL</h4>
+                    <p id="totalCupons" style="font-size: 1.5rem; font-weight: bold; color: var(--accent2); margin: 0;">0</p>
+                </div>
+                <div class="stat-card" style="background: var(--panel); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--glass); text-align: center;">
+                    <div style="font-size: 2rem; color: var(--accent2);">✅</div>
+                    <h4 style="color: var(--accent2); margin: 0.5rem 0;">ATIVOS</h4>
+                    <p id="cuponsAtivos" style="font-size: 1.5rem; font-weight: bold; color: var(--accent2); margin: 0;">0</p>
+                </div>
+                <div class="stat-card" style="background: var(--panel); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--glass); text-align: center;">
+                    <div style="font-size: 2rem; color: var(--accent1);">📅</div>
+                    <h4 style="color: var(--accent1); margin: 0.5rem 0;">EXPIRADOS</h4>
+                    <p id="cuponsExpirados" style="font-size: 1.5rem; font-weight: bold; color: var(--accent1); margin: 0;">0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista de Cupons -->
+        <section class="products-section" style="max-width: 1200px; margin: 0 auto;">
+            <h3 class="section-title">LISTA DE CUPONS</h3>
+            <div id="listaCupons" class="cupons-grid" style="display: grid; gap: 1.5rem;">
+                <!-- Cupons serão carregados via JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Criar/Editar Cupom -->
+    <div id="modalCupom" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: var(--panel); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--glass); max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 id="modalTitle" style="color: var(--accent3); margin: 0;">CRIAR CUPOM</h3>
+                <button onclick="fecharModalCupom()" style="background: none; border: none; color: var(--accent1); font-size: 1.5rem; cursor: pointer;">×</button>
+            </div>
+
+            <form id="cupomForm">
+                <input type="hidden" id="cupomId">
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="codigo" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">CÓDIGO DO CUPOM *</label>
+                    <input type="text" id="codigo" name="codigo" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;" placeholder="EX: GLOW10">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="descontoPercentual" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">DESCONTO (%) *</label>
+                    <input type="number" id="descontoPercentual" name="descontoPercentual" min="1" max="100" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="dataValidade" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">DATA DE VALIDADE *</label>
+                    <input type="date" id="dataValidade" name="dataValidade" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--muted); border-radius: var(--radius); background: var(--bg-2); color: white; font-family: 'Share Tech Mono', monospace;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">OPÇÕES</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--muted);">
+                            <input type="checkbox" id="usoUnico" name="usoUnico" style="transform: scale(1.2);">
+                            Uso Único
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--muted);">
+                            <input type="checkbox" id="ativo" name="ativo" checked style="transform: scale(1.2);">
+                            Ativo
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalCupom()">CANCELAR</button>
+                    <button type="submit" class="btn btn-primary" id="btnSalvarCupom">CRIAR CUPOM</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store - Admin</h3>
+                <p>Gerenciamento de cupons de desconto</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Glowered Store. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Verificar se usuário é admin
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuario = verificarLogin();
+            
+            if (!usuario || usuario.tipo !== 'admin') {
+                alert('Acesso restrito para administradores!');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Configurar botões
+            document.getElementById('backButton').addEventListener('click', function() {
+                window.location.href = './admin-dashboard.html';
+            });
+
+            document.getElementById('logoutButton').addEventListener('click', function() {
+                logout();
+            });
+
+            // Carregar cupons
+            carregarCupons();
+        });
+
+        function abrirModalCriarCupom() {
+            document.getElementById('modalTitle').textContent = 'CRIAR CUPOM';
+            document.getElementById('cupomForm').reset();
+            document.getElementById('cupomId').value = '';
+            document.getElementById('ativo').checked = true;
+            document.getElementById('btnSalvarCupom').textContent = 'CRIAR CUPOM';
+            document.getElementById('modalCupom').style.display = 'flex';
+        }
+
+        function fecharModalCupom() {
+            document.getElementById('modalCupom').style.display = 'none';
+        }
+
+        // Fechar modal ao clicar fora
+        document.getElementById('modalCupom').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModalCupom();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glowered Store - Meu Carrinho">
+    <meta name="keywords" content="carrinho, compras, produtos, glowered">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/styleCarrinho.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../js/auth.js" defer></script>
+    <script src="../js/carrinho.js" defer></script>
+    <!-- <script src="../js/pageCarrinho.js" defer></script> -->
+    <title>Glowered Store - Meu Carrinho</title>
+</head>
+
+<body>
+    <header>
+        <nav aria-label="Navegação principal">
+            <div class="nav-container">
+                <!-- Logo e Título à esquerda -->
+                <div id="imgTitle" role="banner">
+                    <a href="../index.html">
+                        <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="50" height="50">
+                    </a>
+                    <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                </div>
+                
+                <!-- Nome da página no centro -->
+                <div class="search-container" style="justify-content: center;">
+                    <h2 style="color: var(--accent3); margin: 0;">MEU CARRINHO</h2>
+                </div>
+
+                <!-- Ações do usuário à direita -->
+                <div class="header-actions">
+                    <button id="home-btn" aria-label="Voltar para loja" style="background: none; border: 2px solid var(--accent2); padding: 0.5rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s ease;">
+                        <img src="https://img.icons8.com/fluency/96/home.png" alt="Home" style="width: 20px; height: 20px; filter: invert();">
+                    </button>
+                    
+                    <button id="logoutButton" aria-label="Sair da conta" style="background: none; border: 2px solid var(--accent1); padding: 0.5rem; border-radius: var(--radius); cursor: pointer; transition: all 0.3s ease;">
+                        <img src="https://img.icons8.com/fluency/96/exit.png" alt="Sair" style="width: 20px; height: 20px; filter: invert();">
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" aria-labelledby="carrinho-title">
+            <div class="hero-content">
+                <h2 id="carrinho-title">MEU <span class="brand-purple">CARRINHO</span></h2>
+                <p class="hero-subtitle">Revise seus produtos antes de finalizar a compra</p>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" class="carrinho-loading">
+            <p>🌀 CARREGANDO CARRINHO...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="carrinho-error" style="display: none;">
+            <p>❌ ERRO AO CARREGAR CARRINHO</p>
+            <button class="btn btn-primary" onclick="carregarCarrinho()">TENTAR NOVAMENTE</button>
+        </div>
+
+        <div class="carrinho-container">
+            <div class="carrinho-content">
+                <!-- Lista de Itens -->
+                <div class="itens-carrinho">
+                    <div id="carrinho-vazio" class="carrinho-vazio" style="display: none;">
+                        <img src="https://img.icons8.com/fluency/96/shopping-cart.png" alt="Carrinho vazio">
+                        <h3>SEU CARRINHO ESTÁ VAZIO</h3>
+                        <p>Adicione alguns produtos incríveis!</p>
+                        <button class="btn btn-primary" onclick="window.location.href='../index.html'">
+                            CONTINUAR COMPRANDO
+                        </button>
+                    </div>
+
+                    <div id="lista-itens">
+                        <!-- Itens do carrinho serão carregados via API -->
+                    </div>
+                </div>
+
+                <!-- Resumo do Pedido -->
+                <div class="resumo-pedido">
+                    <div class="resumo-header">
+                        <h3>RESUMO DO PEDIDO</h3>
+                    </div>
+                    
+                    <div class="resumo-detalhes">
+                        <div class="resumo-linha">
+                            <span>Subtotal:</span>
+                            <span id="subtotal">R$ 0,00</span>
+                        </div>
+                        <div class="resumo-linha">
+                            <span>Frete:</span>
+                            <span id="frete">R$ 0,00</span>
+                        </div>
+                        <div class="resumo-linha">
+                            <span>Desconto:</span>
+                            <span id="desconto">- R$ 0,00</span>
+                        </div>
+                        <div class="resumo-linha total">
+                            <span>TOTAL:</span>
+                            <span id="total">R$ 0,00</span>
+                        </div>
+                    </div>
+
+                    <div class="cupom-section">
+                        <label for="cupom-input">CUPOM DE DESCONTO</label>
+                        <div class="cupom-input-group">
+                            <input type="text" id="cupom-input" placeholder="Digite o código">
+                            <button class="btn btn-secondary" onclick="aplicarCupom()">APLICAR</button>
+                        </div>
+                        <div id="cupom-message" class="cupom-message"></div>
+                    </div>
+
+                    <button id="btn-finalizar" class="btn-finalizar" onclick="iniciarCheckout()">
+                        FINALIZAR COMPRA
+                    </button>
+
+                    <div class="continuar-comprando">
+                        <button class="btn btn-secondary" onclick="window.location.href='../index.html'">
+                            ← CONTINUAR COMPRANDO
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Checkout -->
+        <div id="checkout-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🎉 FINALIZAR PEDIDO</h3>
+                    <button class="modal-close" onclick="fecharCheckout()">×</button>
+                </div>
+                
+                <div class="checkout-steps">
+                    <div class="step active" data-step="1">
+                        <span>1</span>
+                        <p>Pagamento</p>
+                    </div>
+                    <div class="step" data-step="2">
+                        <span>2</span>
+                        <p>Confirmação</p>
+                    </div>
+                    <div class="step" data-step="3">
+                        <span>3</span>
+                        <p>Sucesso</p>
+                    </div>
+                </div>
+
+                <div id="checkout-content">
+                    <!-- Conteúdo do checkout será carregado aqui -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store</h3>
+                <p>Sua loja de roupas e acessórios premium.</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Glowered Store. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

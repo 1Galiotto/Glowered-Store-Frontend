@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glowered Store - Gerenciar Entregas">
+    <meta name="keywords" content="admin, entregas, logística, glowered">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../../js/auth.js" defer></script>
+    <script src="../../js/admin-entregas.js" defer></script>
+    <title>Glowered Store - Gerenciar Entregas</title>
+</head>
+
+<body class="admin-body">
+    <!-- Header Admin -->
+    <header class="admin-header">
+        <nav aria-label="Navegação administrativa">
+            <div class="admin-nav-container">
+                <!-- Logo e Título -->
+                <div class="admin-logo" role="banner">
+                    <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="45" height="45">
+                    <div>
+                        <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                        <span class="admin-badge">ENTREGAS</span>
+                    </div>
+                </div>
+                
+                <!-- Menu Principal -->
+                <div class="admin-menu">
+                    <a href="admin-dashboard.html" class="menu-item">📊 Dashboard</a>
+                    <a href="admin-produtos.html" class="menu-item">🛍️ Produtos</a>
+                    <a href="admin-estoque.html" class="menu-item">📦 Estoque</a>
+                    <a href="admin-pedidos.html" class="menu-item">📋 Pedidos</a>
+                    <a href="admin-clientes.html" class="menu-item">👥 Clientes</a>
+                    <a href="admin-entregas.html" class="menu-item active">🚚 Entregas</a>
+                    <a href="admin-cupons.html" class="menu-item">🎫 Cupons</a>
+                    <a href="../../index.html" class="menu-item">🏠 Home</a>
+                </div>
+
+                <!-- Ações do Admin -->
+                <div class="admin-actions">
+                    <button id="admin-logout" class="btn-logout" aria-label="Sair do sistema">
+                        <img src="https://img.icons8.com/fluency/96/exit.png" alt="Sair">
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="admin-main">
+        <!-- Hero Section -->
+        <section class="admin-hero">
+            <div class="hero-content">
+                <h1>GERENCIAR <span class="brand-purple">ENTREGAS</span></h1>
+                <p class="hero-subtitle">Acompanhe e gerencie todo o processo de entrega</p>
+                <div class="admin-info">
+                    <span id="total-entregas-info">Carregando...</span>
+                    <span id="current-time"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" class="admin-loading">
+            <p>🌀 CARREGANDO ENTREGAS...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="admin-error" style="display: none;">
+            <p>❌ ERRO AO CARREGAR ENTREGAS</p>
+            <button class="btn btn-primary" onclick="carregarEntregas()">TENTAR NOVAMENTE</button>
+        </div>
+
+        <!-- Filtros e Ações -->
+        <section class="filters-section">
+            <div class="filters-container">
+                <!-- Filtro por Status -->
+                <div class="filter-group">
+                    <label for="filtro-status">Status:</label>
+                    <select id="filtro-status" onchange="filtrarEntregas()">
+                        <option value="todos">Todos os Status</option>
+                        <option value="Em trânsito">🟡 Em Trânsito</option>
+                        <option value="Saiu para entrega">🚚 Saiu para Entrega</option>
+                        <option value="Entregue">✅ Entregue</option>
+                        <option value="Atrasado">⚠️ Atrasado</option>
+                        <option value="Devolvido">↩️ Devolvido</option>
+                    </select>
+                </div>
+
+                <!-- Filtro por Transportadora -->
+                <div class="filter-group">
+                    <label for="filtro-transportadora">Transportadora:</label>
+                    <select id="filtro-transportadora" onchange="filtrarEntregas()">
+                        <option value="todos">Todas</option>
+                        <option value="Correios">📮 Correios</option>
+                        <option value="Jadlog">🚛 Jadlog</option>
+                        <option value="Azul">✈️ Azul</option>
+                        <option value="Loggi">📦 Loggi</option>
+                    </select>
+                </div>
+
+                <!-- Busca -->
+                <div class="filter-group">
+                    <label for="busca-entrega">Buscar:</label>
+                    <input type="text" id="busca-entrega" placeholder="Código rastreamento, pedido..."
+                        oninput="filtrarEntregas()">
+                </div>
+
+                <!-- Ações -->
+                <div class="actions-group">
+                    <button class="btn btn-primary" onclick="criarEntrega()">
+                        ➕ Nova Entrega
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportarEntregas()">
+                        📊 Exportar
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Estatísticas Rápidas -->
+        <section class="quick-stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon em-transito">🟡</div>
+                    <div class="stat-info">
+                        <h3 id="count-em-transito">0</h3>
+                        <p>Em Trânsito</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon saiu-entrega">🚚</div>
+                    <div class="stat-info">
+                        <h3 id="count-saiu-entrega">0</h3>
+                        <p>Saiu para Entrega</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon entregue">✅</div>
+                    <div class="stat-info">
+                        <h3 id="count-entregues">0</h3>
+                        <p>Entregues</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon atrasado">⚠️</div>
+                    <div class="stat-info">
+                        <h3 id="count-atrasadas">0</h3>
+                        <p>Atrasadas</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon total">📦</div>
+                    <div class="stat-info">
+                        <h3 id="total-entregas">0</h3>
+                        <p>Total</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista de Entregas -->
+        <section class="deliveries-section">
+            <div class="section-header">
+                <h2>LISTA DE ENTREGAS</h2>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="carregarEntregas()">
+                        🔄 Atualizar
+                    </button>
+                    <span id="contador-entregas">0 entregas</span>
+                </div>
+            </div>
+
+            <div class="deliveries-container">
+                <div id="lista-entregas" class="deliveries-list">
+                    <!-- Entregas serão carregadas via JavaScript -->
+                    <div class="loading-item">Carregando entregas...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Detalhes da Entrega -->
+    <div id="modal-entrega" class="modal" style="display: none;">
+        <div class="modal-content admin-modal large-modal">
+            <div class="modal-header">
+                <h3 id="modal-entrega-titulo">DETALHES DA ENTREGA</h3>
+                <button class="modal-close" onclick="fecharModalEntrega()">×</button>
+            </div>
+            <div class="modal-body" id="modal-entrega-body">
+                <!-- Conteúdo será carregado via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Atualizar Status -->
+    <div id="modal-status" class="modal" style="display: none;">
+        <div class="modal-content admin-modal">
+            <div class="modal-header">
+                <h3>ATUALIZAR STATUS</h3>
+                <button class="modal-close" onclick="fecharModalStatus()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="novo-status">Novo Status:</label>
+                    <select id="novo-status">
+                        <option value="Em trânsito">🟡 Em Trânsito</option>
+                        <option value="Saiu para entrega">🚚 Saiu para Entrega</option>
+                        <option value="Entregue">✅ Entregue</option>
+                        <option value="Atrasado">⚠️ Atrasado</option>
+                        <option value="Devolvido">↩️ Devolvido</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="fecharModalStatus()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="confirmarAtualizacaoStatus()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nova Entrega -->
+    <div id="modal-nova-entrega" class="modal" style="display: none;">
+        <div class="modal-content admin-modal">
+            <div class="modal-header">
+                <h3>NOVA ENTREGA</h3>
+                <button class="modal-close" onclick="fecharModalNovaEntrega()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-nova-entrega">
+                    <div class="form-group">
+                        <label for="idPedido">Pedido:</label>
+                        <select id="idPedido" required>
+                            <option value="">Selecione um pedido</option>
+                            <!-- Pedidos serão carregados via JavaScript -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transportadora">Transportadora:</label>
+                        <select id="transportadora" required>
+                            <option value="">Selecione a transportadora</option>
+                            <option value="Correios">Correios</option>
+                            <option value="Jadlog">Jadlog</option>
+                            <option value="Azul">Azul</option>
+                            <option value="Loggi">Loggi</option>
+                            <option value="Outra">Outra</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="codigoRastreamento">Código de Rastreamento:</label>
+                        <input type="text" id="codigoRastreamento" required placeholder="Ex: AA123456789BR">
+                    </div>
+                    <div class="form-group">
+                        <label for="dataEnvio">Data de Envio:</label>
+                        <input type="date" id="dataEnvio" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="fecharModalNovaEntrega()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Criar Entrega</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="admin-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store - Admin</h3>
+                <p>Gerenciamento de entregas e logística</p>
+            </div>
+            <div class="footer-section">
+                <p><strong>Última atualização:</strong> <span id="last-update">--:--:--</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Verificar admin e carregar entregas
+        document.addEventListener('DOMContentLoaded', function() {
+            const admin = verificarAdmin();
+            if (!admin) return;
+
+            carregarEntregas();
+            atualizarTempo();
+            setInterval(atualizarTempo, 1000);
+        });
+
+        function atualizarTempo() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('pt-BR');
+            document.getElementById('last-update').textContent = now.toLocaleTimeString('pt-BR');
+        }
+
+        // Configurar logout
+        document.getElementById('admin-logout').addEventListener('click', function() {
+            if (confirm('Deseja sair do sistema administrativo?')) {
+                logout();
+            }
+        });
+
+        // Fechar modais ao clicar fora
+        document.getElementById('modal-entrega').addEventListener('click', function(e) {
+            if (e.target === this) fecharModalEntrega();
+        });
+        document.getElementById('modal-status').addEventListener('click', function(e) {
+            if (e.target === this) fecharModalStatus();
+        });
+        document.getElementById('modal-nova-entrega').addEventListener('click', function(e) {
+            if (e.target === this) fecharModalNovaEntrega();
+        });
+    </script>
+</body>
+</html>

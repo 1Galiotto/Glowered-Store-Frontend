@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/login.css">
+    <link rel="shortcut icon" href="../img/logoNoBackground.png" type="image/x-icon">
+    <script src="../js/fallbackButton.js" defer></script>
+    <title>Glowered Store - Login</title>
+</head>
+
+<body>
+    <header>
+        <a id="backBtn" class="back" href="../index.html" aria-label="Voltar">← Voltar</a>
+        <img src="https://i.ibb.co/Cp7X7djf/entrarnaglowered.png" alt="pagina de login">
+    </header>
+    <main>
+        <form id="loginForm">
+            <!-- Mensagem de erro -->
+            <div id="error-message" style="display: none; color: #ff2d95; text-align: center; margin-bottom: 1rem; font-family: 'Share Tech Mono', monospace;"></div>
+            
+            <!-- Mensagem de sucesso -->
+            <div id="success-message" style="display: none; color: #00e6a8; text-align: center; margin-bottom: 1rem; font-family: 'Share Tech Mono', monospace;"></div>
+
+            <label for="email">Digite seu email</label>
+            <input type="email" placeholder="seu@email.com" id="email" required>
+            
+            <label for="password">Digite sua senha</label>
+            <input type="password" placeholder="Sua senha" id="password" required>
+            
+            <button type="submit" id="btnLogin">Entrar</button>
+            
+            <p id="refRegister">Caso <b>Não Possua</b> uma conta clique <a href="register.html" id="refRegisterLink">Aqui</a></p>
+        </form>
+    </main>
+    <footer>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+
+            // Verificar se veio do cadastro com mensagem de sucesso
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('cadastro') === 'sucesso') {
+                successMessage.textContent = 'Cadastro realizado com sucesso! Faça login.';
+                successMessage.style.display = 'block';
+            }
+
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const btnLogin = document.getElementById('btnLogin');
+
+                // Validação básica
+                if (!email || !password) {
+                    showError('Por favor, preencha todos os campos.');
+                    return;
+                }
+
+                if (!isValidEmail(email)) {
+                    showError('Por favor, insira um email válido.');
+                    return;
+                }
+
+                try {
+                    // Mostrar loading no botão
+                    btnLogin.textContent = 'ENTRANDO...';
+                    btnLogin.disabled = true;
+                    errorMessage.style.display = 'none';
+
+                    // Carregar auth.js dinamicamente apenas quando necessário
+                    await loadAuthJS();
+                    
+                    // Fazer login
+                    const resultado = await login(email, password);
+                    
+                    // Login bem-sucedido
+                    successMessage.textContent = 'Login realizado com sucesso! Redirecionando...';
+                    successMessage.style.display = 'block';
+                    
+                    // Redirecionar após breve delay
+                    setTimeout(() => {
+                        window.location.href = '../index.html';
+                    }, 1000);
+
+                } catch (error) {
+                    showError(error.message || 'Erro ao fazer login. Tente novamente.');
+                    
+                    // Restaurar botão
+                    btnLogin.textContent = 'Entrar';
+                    btnLogin.disabled = false;
+                }
+            });
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            // Carregar auth.js apenas quando necessário (evita erro com servidor desligado)
+            function loadAuthJS() {
+                return new Promise((resolve, reject) => {
+                    // Se a função login já existe, não precisa carregar novamente
+                    if (typeof window.login === 'function') {
+                        resolve();
+                        return;
+                    }
+
+                    const script = document.createElement('script');
+                    script.src = '../js/auth.js';
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error('Erro ao carregar sistema de autenticação'));
+                    document.head.appendChild(script);
+                });
+            }
+
+            // Limpar mensagens ao digitar
+            document.getElementById('email').addEventListener('input', clearMessages);
+            document.getElementById('password').addEventListener('input', clearMessages);
+
+            function clearMessages() {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

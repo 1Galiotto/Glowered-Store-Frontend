@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glowered Store - Dashboard Administrativo">
+    <meta name="keywords" content="admin, dashboard, gestão, glowered">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../../js/auth.js" defer></script>
+    <script src="../../js/admin-dashboard.js" defer></script>
+    <title>Glowered Store - Dashboard Admin</title>
+</head>
+
+<body class="admin-body">
+    <!-- Header Admin -->
+    <header class="admin-header">
+        <nav aria-label="Navegação administrativa">
+            <div class="admin-nav-container">
+                <!-- Logo e Título -->
+                <div class="admin-logo" role="banner">
+                    <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="45" height="45">
+                    <div>
+                        <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                        <span class="admin-badge">ADMIN</span>
+                    </div>
+                </div>
+                
+                <!-- Menu Principal -->
+                <div class="admin-menu">
+                    <a href="admin-dashboard.html" class="menu-item active">📊 Dashboard</a>
+                    <a href="admin-produtos.html" class="menu-item">🛍️ Produtos</a>
+                    <a href="admin-estoque.html" class="menu-item">📦 Estoque</a>
+                    <a href="admin-pedidos.html" class="menu-item">📋 Pedidos</a>
+                    <a href="admin-clientes.html" class="menu-item">👥 Clientes</a>
+                    <a href="admin-entregas.html" class="menu-item">🚚 Entregas</a>
+                    <a href="admin-cupons.html" class="menu-item">🎫 Cupons</a>
+                    <a href="../../index.html" class="menu-item">🏠 Home</a>
+                </div>
+
+                <!-- Ações do Admin -->
+                <div class="admin-actions">
+                    <button id="admin-logout" class="btn-logout" aria-label="Sair do sistema">
+                        <img src="https://img.icons8.com/fluency/96/exit.png" alt="Sair">
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="admin-main">
+        <!-- Hero Section -->
+        <section class="admin-hero">
+            <div class="hero-content">
+                <h1>DASHBOARD <span class="brand-purple">ADMINISTRATIVO</span></h1>
+                <p class="hero-subtitle">Visão geral do desempenho da loja</p>
+                <div class="admin-info">
+                    <span id="admin-welcome">Bem-vindo, Admin!</span>
+                    <span id="current-time"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" class="admin-loading">
+            <p>🌀 CARREGANDO DASHBOARD...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="admin-error" style="display: none;">
+            <p>❌ ERRO AO CARREGAR DADOS</p>
+            <button class="btn btn-primary" onclick="carregarDashboard()">TENTAR NOVAMENTE</button>
+        </div>
+
+        <!-- Métricas Principais -->
+        <section class="metrics-section">
+            <h2 class="section-title">MÉTRICAS PRINCIPAIS</h2>
+            <div class="metrics-grid">
+                <!-- Total de Vendas -->
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: linear-gradient(45deg, var(--accent2), var(--accent3));">
+                        💰
+                    </div>
+                    <div class="metric-info">
+                        <h3 id="total-vendas">R$ 0,00</h3>
+                        <p>Total em Vendas</p>
+                        <span class="metric-trend" id="trend-vendas">↗️ +0%</span>
+                    </div>
+                </div>
+
+                <!-- Total de Pedidos -->
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: linear-gradient(45deg, var(--accent1), var(--accent4));">
+                        📦
+                    </div>
+                    <div class="metric-info">
+                        <h3 id="total-pedidos">0</h3>
+                        <p>Pedidos Realizados</p>
+                        <span class="metric-trend" id="trend-pedidos">↗️ +0%</span>
+                    </div>
+                </div>
+
+                <!-- Clientes Ativos -->
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: linear-gradient(45deg, #7D20FF, #FF2D95);">
+                        👥
+                    </div>
+                    <div class="metric-info">
+                        <h3 id="total-clientes">0</h3>
+                        <p>Clientes Ativos</p>
+                        <span class="metric-trend" id="trend-clientes">↗️ +0%</span>
+                    </div>
+                </div>
+
+                <!-- Produtos em Estoque -->
+                <div class="metric-card">
+                    <div class="metric-icon" style="background: linear-gradient(45deg, #00E6A8, #8AED14);">
+                        🏪
+                    </div>
+                    <div class="metric-info">
+                        <h3 id="total-produtos">0</h3>
+                        <p>Produtos em Estoque</p>
+                        <span class="metric-trend" id="trend-produtos">↗️ +0%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid Principal -->
+        <div class="dashboard-grid">
+            <!-- Estatísticas de Pedidos -->
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <h3>📊 ESTATÍSTICAS DE PEDIDOS</h3>
+                    <select id="periodo-pedidos" onchange="carregarEstatisticasPedidos()">
+                        <option value="hoje">Hoje</option>
+                        <option value="semana" selected>Esta Semana</option>
+                        <option value="mes">Este Mês</option>
+                        <option value="ano">Este Ano</option>
+                    </select>
+                </div>
+                <div class="card-content">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value" id="pedidos-pendentes">0</span>
+                            <span class="stat-label">Pendentes</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="pedidos-processamento">0</span>
+                            <span class="stat-label">Em Processamento</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="pedidos-enviados">0</span>
+                            <span class="stat-label">Enviados</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="pedidos-entregues">0</span>
+                            <span class="stat-label">Entregues</span>
+                        </div>
+                    </div>
+                    <div class="chart-placeholder" id="chart-pedidos">
+                        <p>📈 Gráfico de pedidos por status</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Produtos Mais Vendidos -->
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <h3>🔥 PRODUTOS MAIS VENDIDOS</h3>
+                    <button class="btn-refresh" onclick="carregarProdutosMaisVendidos()">🔄</button>
+                </div>
+                <div class="card-content">
+                    <div id="lista-produtos-vendidos" class="products-list">
+                        <div class="loading-item">Carregando produtos...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Estoque Baixo -->
+            <section class="dashboard-card stock-alert">
+                <div class="card-header">
+                    <h3>⚠️ ESTOQUE BAIXO</h3>
+                    <span class="alert-badge" id="count-estoque-baixo">0</span>
+                </div>
+                <div class="card-content">
+                    <div id="lista-estoque-baixo" class="alert-list">
+                        <div class="loading-item">Verificando estoque...</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-primary" onclick="window.location.href='admin-estoque.html'">
+                            GERENCIAR ESTOQUE
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cupons Ativos -->
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <h3>🎫 CUPONS ATIVOS</h3>
+                    <button class="btn-refresh" onclick="carregarCuponsAtivos()">🔄</button>
+                </div>
+                <div class="card-content">
+                    <div id="lista-cupons-ativos" class="coupons-list">
+                        <div class="loading-item">Carregando cupons...</div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary" onclick="window.location.href='admin-cupons.html'">
+                            VER TODOS OS CUPONS
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Atividade Recente -->
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <h3>🕒 ATIVIDADE RECENTE</h3>
+                    <button class="btn-refresh" onclick="carregarAtividadeRecente()">🔄</button>
+                </div>
+                <div class="card-content">
+                    <div id="lista-atividade" class="activity-list">
+                        <div class="loading-item">Carregando atividades...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Métricas de Desempenho -->
+            <section class="dashboard-card">
+                <div class="card-header">
+                    <h3>📈 MÉTRICAS DE DESEMPENHO</h3>
+                </div>
+                <div class="card-content">
+                    <div class="performance-metrics">
+                        <div class="performance-item">
+                            <span class="metric-name">Taxa de Conversão</span>
+                            <div class="metric-bar">
+                                <div class="metric-fill" id="taxa-conversao" style="width: 0%"></div>
+                            </div>
+                            <span class="metric-value" id="valor-conversao">0%</span>
+                        </div>
+                        <div class="performance-item">
+                            <span class="metric-name">Ticket Médio</span>
+                            <div class="metric-bar">
+                                <div class="metric-fill" id="ticket-medio" style="width: 0%"></div>
+                            </div>
+                            <span class="metric-value" id="valor-ticket">R$ 0,00</span>
+                        </div>
+                        <div class="performance-item">
+                            <span class="metric-name">Satisfação do Cliente</span>
+                            <div class="metric-bar">
+                                <div class="metric-fill" id="satisfacao" style="width: 0%"></div>
+                            </div>
+                            <span class="metric-value" id="valor-satisfacao">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Ações Rápidas -->
+        <section class="quick-actions-section">
+            <h2 class="section-title">AÇÕES RÁPIDAS</h2>
+            <div class="actions-grid">
+                <button class="action-card" onclick="window.location.href='./admin-produtos.html'">
+                    <div class="action-icon">➕</div>
+                    <h4>Adicionar Produto</h4>
+                    <p>Criar novo produto no catálogo</p>
+                </button>
+
+                <button class="action-card" onclick="window.location.href='./admin-cupons.html'">
+                    <div class="action-icon">🎫</div>
+                    <h4>Criar Cupom</h4>
+                    <p>Gerar novo cupom de desconto</p>
+                </button>
+
+                <button class="action-card" onclick="window.location.href='./admin-pedidos.html'">
+                    <div class="action-icon">📋</div>
+                    <h4>Ver Pedidos</h4>
+                    <p>Gerenciar todos os pedidos</p>
+                </button>
+
+                <button class="action-card" onclick="window.location.href='./admin-estoque.html'">
+                    <div class="action-icon">📦</div>
+                    <h4>Controlar Estoque</h4>
+                    <p>Ajustar níveis de estoque</p>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="admin-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store - Admin</h3>
+                <p>Sistema de gestão administrativa</p>
+            </div>
+            <div class="footer-section">
+                <p><strong>Última atualização:</strong> <span id="last-update">--:--:--</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Detalhes -->
+    <div id="details-modal" class="modal" style="display: none;">
+        <div class="modal-content admin-modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Detalhes</h3>
+                <button class="modal-close" onclick="fecharModal()">×</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Conteúdo do modal será carregado aqui -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
