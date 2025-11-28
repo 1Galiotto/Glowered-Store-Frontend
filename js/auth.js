@@ -1,5 +1,6 @@
 // Configurações da API
-const API_BASE = 'http://localhost:3000';
+// const API_BASE = 'http://localhost:3000';
+const API_BASE = 'glowered-store-backend-production.up.railway.app';
 
 // Verificar se usuário está logado
 function verificarLogin() {
