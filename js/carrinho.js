@@ -59,7 +59,21 @@ async function carregarCarrinho() {
 
     } catch (err) {
         console.error('❌ Erro na API, usando modo demo:', err);
-        // ... resto do código de fallback
+        // Tenta carregar dados de demonstração
+        try {
+            const dadosDemo = getDadosDemonstracao();
+            if (dadosDemo.length > 0) {
+                itensCarrinho = dadosDemo;
+                if (carrinhoVazio) carrinhoVazio.style.display = 'none';
+                exibirItensCarrinho(itensCarrinho);
+                atualizarResumo();
+            } else {
+                mostrarCarrinhoVazio();
+            }
+        } catch (demoError) {
+            console.error('Erro no modo demo:', demoError);
+            mostrarCarrinhoVazio();
+        }
     } finally {
         if (loading) loading.style.display = 'none';
     }
@@ -143,7 +157,7 @@ function irParaPedidos() {
     fecharCheckout();
     
     // Verifica se a página de pedidos existe, senão vai para a loja
-    const pedidosUrl = './pedidos.html'; // ou '../html/pedidos.html' dependendo da sua estrutura
+    const pedidosUrl = './pedidos.html';
     
     // Tenta redirecionar para pedidos, se não existir vai para home
     fetch(pedidosUrl)
@@ -159,11 +173,11 @@ function irParaPedidos() {
         });
 }
 
-// Atualize a função finalizarProcesso também
 function finalizarProcesso() {
     fecharCheckout();
     window.location.href = '../index.html';
 }
+
 function mostrarCarrinhoVazio() {
     const carrinhoVazio = document.getElementById('carrinho-vazio');
     const listaItens = document.getElementById('lista-itens');
@@ -206,13 +220,6 @@ function getDadosDemonstracao() {
             }
         }
     ];
-}
-
-function mostrarCarrinhoVazio() {
-    document.getElementById('carrinho-vazio').style.display = 'block';
-    document.getElementById('lista-itens').innerHTML = '';
-    document.getElementById('btn-finalizar').disabled = true;
-    atualizarResumo();
 }
 
 // Exibir itens do carrinho
@@ -544,77 +551,77 @@ function carregarPassoCheckout(passo) {
         case 3:
             const numeroPedido = `GLW${Date.now().toString().slice(-6)}`;
             checkoutContent.innerHTML = `
-        <div class="checkout-success">
-            <img src="https://img.icons8.com/fluency/96/checked.png" alt="Sucesso">
-            <h4>PEDIDO CONFIRMADO! 🎉</h4>
-            <p>Seu pedido foi processado com sucesso e já está sendo preparado.</p>
-            <div style="background: var(--bg-2); padding: 1rem; border-radius: var(--radius); margin: 1rem 0;">
-                <p style="color: var(--accent2); font-family: 'Share Tech Mono', monospace; margin: 0;">
-                    Nº do Pedido: ${numeroPedido}<br>
-                    Total: R$ ${totalPedido.toFixed(2)}<br>
-                    Previsão de entrega: 5 dias úteis
-                </p>
-            </div>
-            <div style="display: flex; gap: 1rem; flex-direction: column;">
-                <button class="btn btn-primary" onclick="irParaPedidos()">
-                    📦 VER MEUS PEDIDOS
-                </button>
-                <button class="btn btn-secondary" onclick="finalizarProcesso()">
-                    🏠 VOLTAR À LOJA
-                </button>
-            </div>
-        </div>
-    `;
+                <div class="checkout-success">
+                    <img src="https://img.icons8.com/fluency/96/checked.png" alt="Sucesso">
+                    <h4>PEDIDO CONFIRMADO! 🎉</h4>
+                    <p>Seu pedido foi processado com sucesso e já está sendo preparado.</p>
+                    <div style="background: var(--bg-2); padding: 1rem; border-radius: var(--radius); margin: 1rem 0;">
+                        <p style="color: var(--accent2); font-family: 'Share Tech Mono', monospace; margin: 0;">
+                            Nº do Pedido: ${numeroPedido}<br>
+                            Total: R$ ${totalPedido.toFixed(2)}<br>
+                            Previsão de entrega: 5 dias úteis
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; flex-direction: column;">
+                        <button class="btn btn-primary" onclick="irParaPedidos()">
+                            📦 VER MEUS PEDIDOS
+                        </button>
+                        <button class="btn btn-secondary" onclick="finalizarProcesso()">
+                            🏠 VOLTAR À LOJA
+                        </button>
+                    </div>
+                </div>
+            `;
             break;
     }
 }
 
-async function limparCarrinhoAposPedido(idUsuario) {
-    try {
-        console.log('🔄 Limpando carrinho após pedido...');
-
-        // Tenta limpar no backend
-        const response = await fetch(`${API_BASE}/carrinho/limpar/${idUsuario}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders()
-        });
-
-        if (response.ok) {
-            console.log('✅ Carrinho limpo no backend');
-        } else {
-            console.log('⚠️ Erro ao limpar carrinho no backend, limpando localmente');
-        }
-
-        // Sempre limpa localmente
-        await limparCarrinhoLocal();
-
-    } catch (err) {
-        console.error('❌ Erro ao limpar carrinho:', err);
-        await limparCarrinhoLocal();
-    }
+// Função para limpar carrinho localmente
+async function limparCarrinhoLocal() {
+    console.log('🔄 Limpando carrinho localmente...');
+    
+    // Limpa a variável global
+    itensCarrinho = [];
+    
+    // Atualiza a interface
+    mostrarCarrinhoVazio();
+    
+    // Limpa qualquer cupom aplicado
+    cupomAplicado = null;
+    
+    // Reseta o resumo
+    atualizarResumo();
+    
+    console.log('✅ Carrinho limpo localmente');
 }
 
+// Função melhorada para limpar carrinho após pedido
 async function limparCarrinhoAposPedido(idUsuario) {
     try {
-        console.log('🔄 Limpando carrinho após pedido...');
+        console.log('🔄 Iniciando limpeza do carrinho...');
 
         // Tenta limpar no backend
-        const response = await fetch(`${API_BASE}/carrinho/limpar/${idUsuario}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders()
-        });
+        try {
+            const response = await fetch(`${API_BASE}/carrinho/limpar/${idUsuario}`, {
+                method: 'DELETE',
+                headers: getAuthHeaders()
+            });
 
-        if (response.ok) {
-            console.log('✅ Carrinho limpo no backend');
-        } else {
-            console.log('⚠️ Erro ao limpar carrinho no backend, limpando localmente');
+            if (response.ok) {
+                console.log('✅ Carrinho limpo no backend');
+            } else {
+                console.log('⚠️ Não foi possível limpar carrinho no backend');
+            }
+        } catch (apiError) {
+            console.log('⚠️ Erro de conexão ao limpar carrinho no backend');
         }
 
-        // Sempre limpa localmente
+        // SEMPRE limpa localmente como fallback
         await limparCarrinhoLocal();
 
     } catch (err) {
-        console.error('❌ Erro ao limpar carrinho:', err);
+        console.error('❌ Erro na limpeza do carrinho:', err);
+        // Garante que limpa localmente mesmo com erro
         await limparCarrinhoLocal();
     }
 }
@@ -636,11 +643,13 @@ function processarPagamento() {
     btn.disabled = true;
 
     setTimeout(() => {
+        btn.textContent = textoOriginal;
+        btn.disabled = false;
         carregarPassoCheckout(2);
     }, 1500);
 }
 
-// Simular confirmação do pedido
+// Simular confirmação do pedido - FUNÇÃO CORRIGIDA
 async function simularConfirmacaoPedido() {
     const btn = event.target;
     const textoOriginal = btn.textContent;
@@ -650,7 +659,12 @@ async function simularConfirmacaoPedido() {
 
     try {
         const usuario = verificarLogin();
-        if (!usuario) return;
+        if (!usuario) {
+            console.error('❌ Usuário não logado');
+            return;
+        }
+
+        console.log('🔄 Iniciando processo de pedido...');
 
         // Tenta criar pedido na API
         const pedidoData = {
@@ -667,48 +681,68 @@ async function simularConfirmacaoPedido() {
             }))
         };
 
-        console.log('🔄 Criando pedido:', pedidoData);
+        console.log('📦 Dados do pedido:', pedidoData);
 
-        const response = await fetch(`${API_BASE}/pedidos`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(pedidoData)
-        });
+        let pedidoCriado = null;
+        
+        // Tenta criar pedido na API
+        try {
+            const response = await fetch(`${API_BASE}/pedidos`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify(pedidoData)
+            });
 
-        if (response.ok) {
-            const pedidoCriado = await response.json();
-            console.log('✅ Pedido criado na API:', pedidoCriado);
-
-            // AGORA LIMPA O CARRINHO APÓS CRIAR O PEDIDO
-            await limparCarrinhoAposPedido(usuario.codUsuario);
-
-        } else {
-            console.log('⚠️ Erro na API, simulando pedido');
-            // Mesmo em caso de erro, limpa o carrinho localmente
-            await limparCarrinhoLocal();
+            if (response.ok) {
+                pedidoCriado = await response.json();
+                console.log('✅ Pedido criado na API:', pedidoCriado);
+            } else {
+                console.log('⚠️ Erro na API de pedidos, criando pedido localmente');
+                // Simula criação local do pedido
+                pedidoCriado = {
+                    codPedido: `GLW${Date.now().toString().slice(-6)}`,
+                    status: 'CONFIRMADO'
+                };
+            }
+        } catch (apiError) {
+            console.error('❌ Erro na API, criando pedido localmente:', apiError);
+            // Fallback: cria pedido localmente
+            pedidoCriado = {
+                codPedido: `GLW${Date.now().toString().slice(-6)}`,
+                status: 'CONFIRMADO'
+            };
         }
 
-        // Mostra sucesso após 2 segundos
+        // LIMPA O CARRINHO (agora de forma mais robusta)
+        console.log('🗑️ Limpando carrinho...');
+        await limparCarrinhoAposPedido(usuario.codUsuario);
+
+        // Atualiza a interface imediatamente
+        itensCarrinho = [];
+        mostrarCarrinhoVazio();
+        
+        console.log('✅ Processo de pedido concluído com sucesso');
+
+        // Mostra sucesso após pequeno delay
         setTimeout(() => {
             carregarPassoCheckout(3);
-        }, 2000);
+        }, 1500);
 
     } catch (err) {
-        console.error('Erro:', err);
-        // Em caso de erro, limpa localmente e mostra sucesso
-        await limparCarrinhoLocal();
+        console.error('❌ Erro crítico no processo de pedido:', err);
+        
+        // Mesmo em caso de erro, tenta limpar o carrinho
+        try {
+            await limparCarrinhoLocal();
+        } catch (cleanError) {
+            console.error('Erro ao limpar carrinho:', cleanError);
+        }
 
+        // Mostra sucesso mesmo com erro (para demo)
         setTimeout(() => {
             carregarPassoCheckout(3);
-        }, 2000);
+        }, 1500);
     }
-}
-
-
-// Finalizar processo
-function finalizarProcesso() {
-    fecharCheckout();
-    window.location.href = '../index.html';
 }
 
 // Event Listeners
@@ -764,4 +798,14 @@ function debugCarrinho() {
     console.log('Itens:', itensCarrinho);
     console.log('Usuário:', verificarLogin());
     console.log('Token:', localStorage.getItem('token'));
+}
+
+// Função auxiliar para verificar e redirecionar
+function verificarERedirecionar() {
+    const usuario = verificarLogin();
+    if (!usuario) {
+        window.location.href = './login.html';
+        return false;
+    }
+    return true;
 }

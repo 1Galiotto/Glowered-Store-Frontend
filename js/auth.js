@@ -1,6 +1,5 @@
 // Configurações da API
-// const API_BASE = 'http://localhost:3000';
-const API_BASE = 'glowered-store-backend-production.up.railway.app';
+const API_BASE = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'https://glowered-store-backend-production.up.railway.app';
 
 // Verificar se usuário está logado
 function verificarLogin() {
@@ -8,13 +7,12 @@ function verificarLogin() {
     const user = localStorage.getItem('user');
     
     if (!token || !user) {
-        return null; // Apenas retorna null, não redireciona
+        return null;
     }
     
     try {
         return JSON.parse(user);
     } catch {
-        // Se der erro ao parsear, limpa os dados inválidos
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         return null;
@@ -24,7 +22,7 @@ function verificarLogin() {
 function verificarERedirecionar() {
     const usuario = verificarLogin();
     if (!usuario) {
-        window.location.href = 'html/login.html';
+        window.location.href = './html/login.html';
         return null;
     }
     return usuario;
@@ -47,13 +45,11 @@ async function login(email, senha) {
             throw new Error(data.message || 'Credenciais inválidas');
         }
 
-        // CORREÇÃO: Verificar a estrutura da resposta
         if (data.token && data.user) {
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
             return data;
         } else if (data.token && data.usuario) {
-            // Se a API retornar 'usuario' em vez de 'user'
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.usuario));
             return data;
@@ -108,7 +104,100 @@ function verificarToken() {
     const token = localStorage.getItem('token');
     if (!token) return false;
     
-    // Aqui você pode adicionar verificação de expiração JWT
-    // Por enquanto, só verifica se existe
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const agora = Math.floor(Date.now() / 1000);
+        return payload.exp > agora;
+    } catch {
+        return false;
+    }
+}
+
+// Atualizar dados do usuário
+async function atualizarUsuario(dadosAtualizados) {
+    try {
+        const usuario = verificarLogin();
+        if (!usuario) throw new Error('Usuário não autenticado');
+
+        const response = await fetch(`${API_BASE}/usuarios/${usuario.codUsuario}`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(dadosAtualizados)
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao atualizar usuário');
+        }
+
+        const usuarioAtualizado = await response.json();
+        localStorage.setItem('user', JSON.stringify(usuarioAtualizado));
+        return usuarioAtualizado;
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+// Alterar senha
+async function alterarSenha(senhaAtual, novaSenha) {
+    try {
+        const usuario = verificarLogin();
+        if (!usuario) throw new Error('Usuário não autenticado');
+
+        const response = await fetch(`${API_BASE}/usuarios/${usuario.codUsuario}/senha`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+                senhaAtual,
+                novaSenha
+            })
+        });
+
+        if (!response.ok) {
+            const erro = await response.json();
+            throw new Error(erro.message || 'Erro ao alterar senha');
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        throw error;
+    }
+}
+
+// Verificar permissões de admin
+function isAdmin() {
+    const usuario = verificarLogin();
+    return usuario && usuario.tipo === 'admin';
+}
+
+// Redirecionar se não for admin
+function redirecionarSeNaoAdmin() {
+    if (!isAdmin()) {
+        window.location.href = '../index.html';
+        return false;
+    }
     return true;
+}
+
+// Recuperar senha
+async function recuperarSenha(email) {
+    try {
+        const response = await fetch(`${API_BASE}/recuperar-senha`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao solicitar recuperação de senha');
+        }
+
+        return await response.json();
+
+    } catch (error) {
+        throw error;
+    }
 }

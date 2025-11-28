@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="./css/style.css">
     <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
     <script src="./js/auth.js" defer></script>
+    <script src="./js/config.js" defer></script>
     <script src="./js/produtos.js" defer></script>
     <script src="./js/carrinho.js" defer></script>
     <title>Glowered Store - Roupas e Acessórios Premium</title>
@@ -34,7 +35,7 @@
                         <input id="search-input" type="search" name="query" placeholder="Pesquisar produtos..."
                             aria-label="Pesquisar na loja">
                         <button type="submit" aria-label="Executar pesquisa">
-                            <img src="https://img.icons8.com/search " alt="" class="searchImg">
+                            <img src="https://img.icons8.com/search" alt="Pesquisar" class="searchImg">
                         </button>
                     </form>
                 </div>
@@ -42,14 +43,17 @@
                 <!-- Ações do usuário à direita -->
                 <div class="header-actions">
                     <button id="cart-btn" aria-label="Carrinho de compras" aria-expanded="false">
-                        <span id="cart-count" aria-live="polite">0</span>
+                        <span id="cart-count" aria-live="polite" style="display: none;">0</span>
                         <a href="./html/carrinho.html">
                             <img src="https://img.icons8.com/fluency/96/000000/shopping-cart.png" alt="Carrinho">
                         </a>
                     </button>
 
+                    <button id="admin-dashboard-btn" style="display: none;" aria-label="Painel Administrativo">
+                        <!-- Será preenchido via JavaScript -->
+                    </button>
+
                     <button id="accountButton" aria-label="Minha conta">
-                        <!-- Script vai atualizar dinamicamente baseado no tipo de usuário -->
                         <a href="./html/profile.html" id="account-link">
                             <img src="https://i.ibb.co/qLHtNJTN/account-Icon.png" alt="Conta">
                         </a>
@@ -105,47 +109,20 @@
 
         <!-- Error State -->
         <div id="error" style="display: none; text-align: center; padding: 2rem;">
-            <p style="color: var(--accent1); font-family: 'Share Tech Mono', monospace;">
-                ❌ ERRO AO CARREGAR PRODUTOS
-            </p>
-            <button class="btn btn-primary" onclick="carregarProdutos()">TENTAR NOVAMENTE</button>
+            <!-- Será preenchido via JavaScript -->
         </div>
 
         <section id="featured-products" class="products-section" aria-labelledby="featured-title">
             <h2 id="featured-title" class="section-title">Produtos em Destaque</h2>
             <div class="products-grid" id="products-grid">
-                <!-- Produtos serão carregados via API -->
-                <div class="product-card">
-                    <div class="product-image">🔄 Carregando...</div>
-                    <h3 class="product-name">Produto Exemplo</h3>
-                    <p class="product-description">Carregando descrição do produto...</p>
-                    <div class="product-price">R$ 0,00</div>
-                    <div class="product-actions">
-                        <button class="btn-add-cart" disabled>Carregando...</button>
-                        <button class="btn-favorite">♥</button>
-                    </div>
-                </div>
+                <!-- Produtos serão carregados via JavaScript -->
             </div>
         </section>
 
         <section id="offers" class="products-section" aria-labelledby="offers-title">
             <h2 id="offers-title" class="section-title">Ofertas Especiais</h2>
             <div class="products-grid" id="promo-grid">
-                <!-- Produtos em promoção serão carregados via API -->
-                <div class="product-card featured">
-                    <div class="product-badge">- %</div>
-                    <div class="product-image">🎁 Ofertas</div>
-                    <h3 class="product-name">Carregando ofertas...</h3>
-                    <p class="product-description">Aguarde enquanto carregamos as melhores promoções!</p>
-                    <div class="product-price">
-                        <span class="old-price">R$ 0,00</span>
-                        <span class="new-price">R$ 0,00</span>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn-add-cart" disabled>Carregando...</button>
-                        <button class="btn-favorite">♥</button>
-                    </div>
-                </div>
+                <!-- Produtos em promoção serão carregados via JavaScript -->
             </div>
         </section>
     </main>
@@ -171,8 +148,12 @@
             <div class="footer-section">
                 <h4>Redes Sociais</h4>
                 <div class="social-links">
-                    <a href="#" aria-label="Instagram"><img src="./img/instagram.png" alt="Instagram"></a>
-                    <a href="#" aria-label="Facebook"><img src="./img/facebook.png" alt="Facebook"></a>
+                    <a href="#" aria-label="Instagram">
+                        <img src="./img/instagram.png" alt="Instagram" onerror="this.style.display='none'">
+                    </a>
+                    <a href="#" aria-label="Facebook">
+                        <img src="./img/facebook.png" alt="Facebook" onerror="this.style.display='none'">
+                    </a>
                 </div>
             </div>
         </div>
@@ -183,69 +164,69 @@
     </footer>
 
     <script>
+    // Inicialização da aplicação
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('📄 Index.html carregado');
-        
-        // Verificar se usuário está logado
-        const usuario = verificarLogin();
-
-        if (usuario) {
-            console.log('✅ Usuário logado:', usuario);
-            
-            // 🔥 ADICIONAR: Verificar se é admin e mostrar link do dashboard
-            if (usuario.tipo === 'admin') {
-                console.log('👑 Usuário é administrador - mostrando link do dashboard');
-                adicionarLinkAdmin();
-            }
-            
-            // Carregar produtos normalmente (tanto admin quanto cliente)
-            console.log('🔄 Carregando produtos...');
-            carregarProdutos();
-            
-        } else {
-            // Usuário não logado
-            console.log('❌ Usuário não logado');
-            
-            // Mostrar mensagem para fazer login
-            const loadingElement = document.getElementById('loading');
-            if (loadingElement) {
-                loadingElement.innerHTML = `
-                    <div style="text-align: center; padding: 2rem;">
-                        <p style="color: var(--accent3); margin-bottom: 1rem;">
-                            🔐 Faça login para ver os produtos
-                        </p>
-                        <a href="./html/login.html" class="btn btn-primary">
-                            🚀 Fazer Login
-                        </a>
-                    </div>
-                `;
-                loadingElement.style.display = 'block';
-            }
-        }
-
-        // Configurar busca
-        const searchForm = document.getElementById('search-form');
-        if (searchForm) {
-            searchForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const termo = document.getElementById('search-input').value;
-                if (termo) {
-                    buscarProdutos(termo);
-                }
-            });
-        }
+        console.log('🚀 Inicializando Glowered Store...');
+        inicializarApp();
     });
 
-    // 🔥 NOVA FUNÇÃO: Adicionar link do dashboard admin na navegação
+    async function inicializarApp() {
+        try {
+            // Verificar elementos críticos
+            const elementos = {
+                productsGrid: document.getElementById('products-grid'),
+                promoGrid: document.getElementById('promo-grid'),
+                loading: document.getElementById('loading'),
+                error: document.getElementById('error'),
+                cartCount: document.getElementById('cart-count')
+            };
+
+            console.log('🔍 Elementos DOM:', elementos);
+
+            // Verificar autenticação
+            const usuario = verificarLogin();
+            
+            if (usuario) {
+                console.log('✅ Usuário autenticado:', usuario.nome);
+                
+                // Configurar interface baseada no tipo de usuário
+                if (usuario.tipo === 'admin') {
+                    adicionarLinkAdmin();
+                    atualizarBadgeAdmin();
+                }
+                
+                // Carregar produtos
+                await carregarProdutos();
+                
+                // Configurar busca
+                const searchForm = document.getElementById('search-form');
+                if (searchForm) {
+                    searchForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const termo = document.getElementById('search-input').value.trim();
+                        if (termo) {
+                            buscarProdutos(termo);
+                        }
+                    });
+                }
+                
+            } else {
+                console.log('🔐 Usuário não autenticado');
+                mostrarLoginRequerido();
+            }
+
+        } catch (error) {
+            console.error('❌ Erro na inicialização:', error);
+            mostrarErroCritico(error);
+        }
+    }
+
     function adicionarLinkAdmin() {
         const headerActions = document.querySelector('.header-actions');
+        const adminBtn = document.getElementById('admin-dashboard-btn');
         
-        if (headerActions) {
-            // Criar botão do dashboard admin
-            const adminButton = document.createElement('button');
-            adminButton.id = 'admin-dashboard-btn';
-            adminButton.setAttribute('aria-label', 'Painel Administrativo');
-            adminButton.innerHTML = `
+        if (headerActions && adminBtn) {
+            adminBtn.innerHTML = `
                 <a href="./html/admin/admin-dashboard.html" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: inherit;">
                     <img src="https://img.icons8.com/fluency/96/admin-settings-male.png" alt="Admin" style="width: 24px; height: 24px; filter: invert(1);">
                     <span style="color: var(--accent1); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
@@ -254,63 +235,106 @@
                 </a>
             `;
             
-            // Adicionar estilos ao botão
-            adminButton.style.background = 'none';
-            adminButton.style.border = '2px solid var(--accent1)';
-            adminButton.style.padding = '0.5rem';
-            adminButton.style.borderRadius = 'var(--radius)';
-            adminButton.style.cursor = 'pointer';
-            adminButton.style.transition = 'all 0.3s ease';
+            // Estilos do botão admin
+            adminBtn.style.background = 'none';
+            adminBtn.style.border = '2px solid var(--accent1)';
+            adminBtn.style.padding = '0.5rem';
+            adminBtn.style.borderRadius = 'var(--radius)';
+            adminBtn.style.cursor = 'pointer';
+            adminBtn.style.transition = 'all 0.3s ease';
+            adminBtn.style.display = 'flex';
+            adminBtn.style.alignItems = 'center';
             
-            // Efeito hover
-            adminButton.addEventListener('mouseenter', function() {
+            // Efeitos hover
+            adminBtn.addEventListener('mouseenter', function() {
                 this.style.background = 'var(--accent1)';
                 this.style.transform = 'translateY(-2px)';
             });
             
-            adminButton.addEventListener('mouseleave', function() {
+            adminBtn.addEventListener('mouseleave', function() {
                 this.style.background = 'none';
                 this.style.transform = 'translateY(0)';
             });
             
-            // Inserir antes do botão da conta
-            const accountButton = document.getElementById('accountButton');
-            if (accountButton) {
-                headerActions.insertBefore(adminButton, accountButton);
-            } else {
-                headerActions.appendChild(adminButton);
-            }
-            
-            console.log('✅ Link do dashboard admin adicionado');
+            console.log('✅ Painel admin adicionado');
         }
     }
 
-    // 🔥 OPIONAL: Atualizar o botão de conta para mostrar que é admin
     function atualizarBadgeAdmin() {
-        const usuario = verificarLogin();
-        if (usuario && usuario.tipo === 'admin') {
-            const accountLink = document.querySelector('#accountButton a');
-            if (accountLink) {
-                accountLink.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <img src="https://i.ibb.co/qLHtNJTN/account-Icon.png" alt="Conta Admin">
-                        <span style="color: var(--accent1); font-size: 0.7rem; background: rgba(255, 45, 149, 0.2); padding: 0.2rem 0.5rem; border-radius: 10px; border: 1px solid var(--accent1);">
-                            ADMIN
-                        </span>
-                    </div>
-                `;
-            }
+        const accountLink = document.querySelector('#accountButton a');
+        if (accountLink) {
+            accountLink.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <img src="https://i.ibb.co/qLHtNJTN/account-Icon.png" alt="Conta Admin">
+                    <span style="color: var(--accent1); font-size: 0.7rem; background: rgba(255, 45, 149, 0.2); padding: 0.2rem 0.5rem; border-radius: 10px; border: 1px solid var(--accent1);">
+                        ADMIN
+                    </span>
+                </div>
+            `;
         }
     }
 
-    // Executar após o DOM carregar
-    setTimeout(() => {
-        const usuario = verificarLogin();
-        if (usuario && usuario.tipo === 'admin') {
-            atualizarBadgeAdmin();
+    function mostrarLoginRequerido() {
+        const productsGrid = document.getElementById('products-grid');
+        if (productsGrid) {
+            productsGrid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                    <h3 style="color: var(--accent3); margin-bottom: 1rem;">🔐 Acesso Restrito</h3>
+                    <p style="color: var(--muted); margin-bottom: 2rem;">
+                        Faça login para explorar nossa coleção exclusiva
+                    </p>
+                    <a href="./html/login.html" class="btn btn-primary" style="font-size: 1.1rem;">
+                        🚀 Fazer Login
+                    </a>
+                    <a href="./html/cadastro.html" class="btn btn-secondary" style="font-size: 1.1rem; margin-left: 1rem;">
+                        📝 Criar Conta
+                    </a>
+                </div>
+            `;
         }
-    }, 100);
-</script>
+        
+        // Esconder seções vazias
+        const promoGrid = document.getElementById('promo-grid');
+        if (promoGrid) promoGrid.innerHTML = '';
+    }
+
+    function mostrarErroCritico(error) {
+        const errorDiv = document.getElementById('error');
+        if (errorDiv) {
+            errorDiv.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <h3 style="color: var(--accent1); margin-bottom: 1rem;">🚨 Erro Crítico</h3>
+                    <p style="color: var(--muted); margin-bottom: 1rem;">
+                        Ocorreu um erro inesperado na aplicação:
+                    </p>
+                    <code style="background: var(--bg-2); padding: 1rem; border-radius: var(--radius); display: block; margin: 1rem 0; font-family: 'Share Tech Mono', monospace;">
+                        ${error.message}
+                    </code>
+                    <button class="btn btn-primary" onclick="location.reload()">
+                        🔄 Recarregar Página
+                    </button>
+                </div>
+            `;
+            errorDiv.style.display = 'block';
+        }
+    }
+
+    // Funções de filtro (serão implementadas em produtos.js)
+    function filtrarProdutos(tipo) {
+        console.log('🔍 Filtrando produtos:', tipo);
+        // Implementação em produtos.js
+    }
+
+    function filtrarPorTipo(tipo) {
+        console.log('🏷️ Filtrando por tipo:', tipo);
+        // Implementação em produtos.js
+    }
+
+    function buscarProdutos(termo) {
+        console.log('🔎 Buscando:', termo);
+        // Implementação em produtos.js
+    }
+    </script>
 </body>
 
 </html>

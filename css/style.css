@@ -242,6 +242,9 @@ main {
   flex: 1;
   padding: 2rem;
   background: var(--bg-1);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Hero Section */
@@ -375,6 +378,7 @@ main {
   margin-bottom: 0.5rem;
   filter: invert();
   transition: transform 0.3s ease;
+  object-fit: contain;
 }
 
 .category-card:hover img {
@@ -386,7 +390,7 @@ main {
   font-size: 0.9rem;
 }
 
-/* Products Sections */
+/* Products Sections - CORRIGIDO */
 .products-section {
   margin-bottom: 3rem;
 }
@@ -402,10 +406,12 @@ main {
 
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 2rem;
+  justify-items: center;
 }
 
+/* Product Card - CORREÇÕES CRÍTICAS */
 .product-card {
   background: var(--panel);
   border-radius: var(--radius);
@@ -415,6 +421,11 @@ main {
   cursor: pointer;
   backdrop-filter: blur(10px);
   position: relative;
+  width: 100%;
+  max-width: 320px;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card:hover {
@@ -433,8 +444,14 @@ main {
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: bold;
+  z-index: 2;
 }
 
+.product-badge.unavailable {
+  background: var(--muted);
+}
+
+/* Product Image Container - CORRIGIDO */
 .product-image {
   width: 100%;
   height: 200px;
@@ -447,22 +464,45 @@ main {
   color: var(--muted);
   font-family: 'Share Tech Mono', monospace;
   border: 1px solid var(--glass);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* Product Image - CORREÇÃO PRINCIPAL */
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
 }
 
 .product-name {
   font-family: 'Orbitron', sans-serif;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-bottom: 0.5rem;
   color: white;
+  line-height: 1.3;
+  flex-shrink: 0;
 }
 
 .product-description {
   font-family: 'Share Tech Mono', monospace;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-bottom: 1rem;
   line-height: 1.4;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .product-price {
@@ -470,7 +510,8 @@ main {
   font-weight: 700;
   font-size: 1.3rem;
   color: var(--accent2);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 
 .old-price {
@@ -485,9 +526,27 @@ main {
   font-weight: bold;
 }
 
+/* Product Info */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.product-size,
+.product-material {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 .product-actions {
   display: flex;
   gap: 0.5rem;
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .btn-add-cart {
@@ -506,10 +565,16 @@ main {
   font-size: 0.8rem;
 }
 
-.btn-add-cart:hover {
+.btn-add-cart:hover:not(:disabled) {
   background: linear-gradient(45deg, var(--accent2), var(--accent3));
   transform: translateY(-2px);
   box-shadow: var(--glow);
+}
+
+.btn-add-cart:disabled {
+  background: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .btn-favorite {
@@ -523,6 +588,8 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 48px;
+  height: 48px;
 }
 
 .btn-favorite:hover {
@@ -595,6 +662,264 @@ footer {
   margin-top: 2rem;
 }
 
+/* Loading and Error States */
+#loading, #error {
+  text-align: center;
+  padding: 2rem;
+}
+
+#loading {
+  display: none;
+}
+
+#error {
+  display: none;
+}
+
+/* Grid Layout Corrections */
+.products-grid:empty::before {
+  content: "Nenhum produto encontrado";
+  color: var(--muted);
+  text-align: center;
+  grid-column: 1 / -1;
+  padding: 3rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+/* Single Product Layout */
+.products-grid:has(.product-card:only-child) {
+  justify-content: center;
+}
+
+.products-grid:has(.product-card:only-child) .product-card {
+  max-width: 400px;
+}
+
+/* ===== HOME BUTTON STYLES ===== */
+#home-btn {
+  background: none;
+  border: 2px solid var(--accent3);
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#home-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(138, 237, 20, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+#home-btn:hover::before {
+  left: 100%;
+}
+
+#home-btn img {
+  width: 24px;
+  height: 24px;
+  filter: invert(58%) sepia(92%) saturate(384%) hue-rotate(58deg) brightness(95%) contrast(101%);
+  transition: all 0.3s ease;
+}
+
+#home-btn:hover {
+  background: var(--accent3);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 20px rgba(138, 237, 20, 0.4);
+  border-color: var(--accent3);
+}
+
+#home-btn:hover img {
+  filter: invert(1) brightness(0) saturate(100%);
+  transform: scale(1.1) rotate(-10deg);
+}
+
+#home-btn:active {
+  transform: translateY(0) scale(0.95);
+  transition: all 0.1s ease;
+}
+
+/* Efeito de pulso para chamar atenção */
+#home-btn.pulse {
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0% {
+      box-shadow: 0 0 5px rgba(138, 237, 20, 0.4);
+  }
+  50% {
+      box-shadow: 0 0 20px rgba(138, 237, 20, 0.8), 0 0 30px rgba(138, 237, 20, 0.4);
+  }
+  100% {
+      box-shadow: 0 0 5px rgba(138, 237, 20, 0.4);
+  }
+}
+
+/* Tooltip */
+#home-btn::after {
+  content: 'Voltar para Home';
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid var(--glass);
+  z-index: 1000;
+}
+
+#home-btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  bottom: -35px;
+}
+
+/* Versão alternativa com ícone FontAwesome */
+#home-btn.fa-version {
+  border: 2px solid var(--accent3);
+  background: transparent;
+}
+
+#home-btn.fa-version i {
+  font-size: 1.2rem;
+  color: var(--accent3);
+  transition: all 0.3s ease;
+}
+
+#home-btn.fa-version:hover i {
+  color: var(--bg-1);
+  transform: scale(1.2);
+}
+
+/* Estados especiais */
+#home-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+#home-btn.loading img {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+#home-btn.success {
+  border-color: var(--accent2);
+  background: var(--accent2);
+}
+
+#home-btn.success img {
+  filter: invert(1);
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.checkout-success {
+  text-align: center;
+  padding: 2rem;
+}
+
+.checkout-success img {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1rem;
+  filter: hue-rotate(120deg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #home-btn {
+      width: 45px;
+      height: 45px;
+      padding: 0.6rem;
+  }
+  
+  #home-btn img {
+      width: 20px;
+      height: 20px;
+  }
+  
+  #home-btn::after {
+      font-size: 0.7rem;
+      padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #home-btn {
+      width: 40px;
+      height: 40px;
+      padding: 0.5rem;
+  }
+  
+  #home-btn img {
+      width: 18px;
+      height: 18px;
+  }
+  
+  #home-btn::after {
+      display: none; /* Esconde tooltip em mobile */
+  }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  #home-btn {
+      transition: none;
+  }
+  
+  #home-btn:hover {
+      transform: none;
+  }
+  
+  #home-btn::before {
+      display: none;
+  }
+  
+  .pulse {
+      animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  #home-btn {
+      border-width: 3px;
+  }
+  
+  #home-btn:hover {
+      background: var(--accent3);
+      border-color: white;
+  }
+}
+
 /* Responsive Design - ATUALIZADO */
 @media (max-width: 1024px) {
   .nav-container {
@@ -664,6 +989,15 @@ footer {
     gap: 1rem;
   }
   
+  .product-card {
+    min-height: 450px;
+    padding: 1.25rem;
+  }
+  
+  .product-image {
+    height: 180px;
+  }
+  
   .footer-content {
     grid-template-columns: 1fr;
     text-align: center;
@@ -697,6 +1031,17 @@ footer {
   
   .products-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .product-card {
+    min-height: 420px;
+    padding: 1rem;
+    max-width: 100%;
+  }
+  
+  .product-image {
+    height: 160px;
   }
   
   .category-grid {
@@ -711,10 +1056,6 @@ footer {
   .category-card img {
     width: 50px;
     height: 50px;
-  }
-  
-  .product-card {
-    padding: 1rem;
   }
   
   .footer-content {
@@ -755,4 +1096,22 @@ footer {
     --bg-2: #0f0d14;
     --bg-3: #201e1e;
   }
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent2);
 }
