@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meus Favoritos - Glowered Store">
+    <meta name="keywords" content="favoritos, produtos salvos, glowered store">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../js/auth.js" defer></script>
+    <script src="../js/config.js" defer></script>
+    <script src="../js/favoritos.js" defer></script>
+    <script src="../js/carrinho.js" defer></script>
+    <title>Meus Favoritos - Glowered Store</title>
+</head>
+
+<body>
+    <header>
+        <nav aria-label="Navegação principal">
+            <div class="nav-container">
+                <!-- Logo e Título à esquerda -->
+                <div id="imgTitle" role="banner">
+                    <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="50"
+                        height="50">
+                    <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                </div>
+
+                <!-- Barra de pesquisa no centro -->
+                <div class="search-container" role="search">
+                    <form id="search-form">
+                        <label for="search-input" class="sr-only">Pesquisar produtos</label>
+                        <input id="search-input" type="search" name="query" placeholder="Pesquisar produtos..."
+                            aria-label="Pesquisar na loja">
+                        <button type="submit" aria-label="Executar pesquisa">
+                            <img src="https://img.icons8.com/search" alt="Pesquisar" class="searchImg">
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Ações do usuário à direita -->
+                <div class="header-actions">
+                    <button id="cart-btn" aria-label="Carrinho de compras" aria-expanded="false">
+                        <span id="cart-count" aria-live="polite" style="display: none;">0</span>
+                        <a href="./carrinho.html">
+                            <img src="https://img.icons8.com/fluency/96/000000/shopping-cart.png" alt="Carrinho">
+                        </a>
+                    </button>
+
+                    <button id="home-btn" aria-label="Voltar para Home">
+                        <a href="../index.html">
+                            <img src="https://img.icons8.com/fluency/96/000000/home.png" alt="Home">
+                        </a>
+                    </button>
+
+                    <button id="accountButton" aria-label="Minha conta">
+                        <a href="./profile.html" id="account-link">
+                            <img src="https://i.ibb.co/qLHtNJTN/account-Icon.png" alt="Conta">
+                        </a>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-content">
+                <h2 id="hero-title">❤️ Meus Favoritos</h2>
+                <p class="hero-subtitle">Seus produtos preferidos em um só lugar</p>
+            </div>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loading" style="text-align: center; padding: 2rem; display: none;">
+            <p style="color: var(--accent3); font-family: 'Share Tech Mono', monospace;">
+                🌀 CARREGANDO FAVORITOS...
+            </p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" style="display: none; text-align: center; padding: 2rem;">
+            <!-- Será preenchido via JavaScript -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" style="display: none; text-align: center; padding: 3rem;">
+            <div style="max-width: 500px; margin: 0 auto;">
+                <h3 style="color: var(--accent3); margin-bottom: 1rem;">💔 Nenhum favorito ainda</h3>
+                <p style="color: var(--muted); margin-bottom: 2rem;">
+                    Você ainda não adicionou nenhum produto aos favoritos. Explore nossa coleção e salve seus itens preferidos!
+                </p>
+                <a href="../index.html" class="btn btn-primary">
+                    🛍️ Explorar Produtos
+                </a>
+            </div>
+        </div>
+
+        <section id="favorites-section" class="products-section" aria-labelledby="favorites-title">
+            <h2 id="favorites-title" class="section-title">Produtos Favoritos</h2>
+            <div class="products-grid" id="favorites-grid">
+                <!-- Produtos favoritos serão carregados via JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store</h3>
+                <p>Sua loja de roupas e acessórios premium.</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Links Rápidos</h4>
+                <nav aria-label="Links do rodapé">
+                    <ul>
+                        <li><a href="/sobre">Sobre Nós</a></li>
+                        <li><a href="/contato">Contato</a></li>
+                        <li><a href="/trocas">Trocas e Devoluções</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="footer-section">
+                <h4>Redes Sociais</h4>
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram">
+                        <img src="https://i.ibb.co/nsydt90h/image.png" alt="Instagram" onerror="this.style.display='none'">
+                    </a>
+                    <a href="#" aria-label="Facebook">
+                        <img src="https://i.ibb.co/MQryb4c/image.png" alt="Facebook" onerror="this.style.display='none'">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 Glowered Store. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+    // Inicialização da página de favoritos
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('❤️ Inicializando página de favoritos...');
+        inicializarFavoritos();
+    });
+
+    async function inicializarFavoritos() {
+        try {
+            // Verificar autenticação
+            const usuario = verificarLogin();
+            if (!usuario) {
+                window.location.href = './login.html';
+                return;
+            }
+
+            console.log('✅ Usuário autenticado para favoritos:', usuario.nome);
+
+            // Carregar favoritos
+            await carregarFavoritos();
+
+            // Configurar busca
+            const searchForm = document.getElementById('search-form');
+            if (searchForm) {
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const termo = document.getElementById('search-input').value.trim();
+                    if (termo) {
+                        window.location.href = `../index.html?search=${encodeURIComponent(termo)}`;
+                    }
+                });
+            }
+
+        } catch (error) {
+            console.error('❌ Erro na inicialização dos favoritos:', error);
+            mostrarErroCritico(error);
+        }
+    }
+
+    function mostrarErroCritico(error) {
+        const errorDiv = document.getElementById('error');
+        if (errorDiv) {
+            errorDiv.innerHTML = `
+                <div style="text-align: center; padding: 2rem;">
+                    <h3 style="color: var(--accent1); margin-bottom: 1rem;">🚨 Erro ao Carregar Favoritos</h3>
+                    <p style="color: var(--muted); margin-bottom: 1rem;">
+                        Ocorreu um erro ao carregar seus produtos favoritos:
+                    </p>
+                    <code style="background: var(--bg-2); padding: 1rem; border-radius: var(--radius); display: block; margin: 1rem 0; font-family: 'Share Tech Mono', monospace;">
+                        ${error.message}
+                    </code>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button class="btn btn-primary" onclick="location.reload()">
+                            🔄 Tentar Novamente
+                        </button>
+                        <a href="../index.html" class="btn btn-secondary">
+                            🏠 Voltar à Loja
+                        </a>
+                    </div>
+                </div>
+            `;
+            errorDiv.style.display = 'block';
+        }
+    }
+    </script>
+</body>
+
+</html>

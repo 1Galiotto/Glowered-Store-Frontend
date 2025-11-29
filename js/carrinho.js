@@ -127,9 +127,7 @@ async function adicionarAoCarrinho(idProduto) {
     }
 }
 
-function isCarrinhoPage() {
-    return window.location.pathname.includes('carrinho.html');
-}
+
 
 async function atualizarContadorCarrinho() {
     try {
@@ -182,12 +180,17 @@ function mostrarCarrinhoVazio() {
     const carrinhoVazio = document.getElementById('carrinho-vazio');
     const listaItens = document.getElementById('lista-itens');
     const btnFinalizar = document.getElementById('btn-finalizar');
-    
+
     if (carrinhoVazio) carrinhoVazio.style.display = 'block';
     if (listaItens) listaItens.innerHTML = '';
     if (btnFinalizar) btnFinalizar.disabled = true;
-    
+
     atualizarResumo();
+}
+
+// Verificar se estamos na página do carrinho
+function isCarrinhoPage() {
+    return document.getElementById('carrinho-vazio') !== null;
 }
 
 // Dados de demonstração (apenas se API falhar)
@@ -445,10 +448,30 @@ async function aplicarCupom() {
 }
 
 // Iniciar checkout
-function iniciarCheckout() {
+async function iniciarCheckout() {
     if (itensCarrinho.length === 0) {
         alert('Adicione produtos ao carrinho antes de finalizar a compra');
         return;
+    }
+
+    // Verificar se usuário tem endereços cadastrados
+    const usuario = verificarLogin();
+    if (!usuario) {
+        alert('Faça login para continuar');
+        window.location.href = './html/login.html';
+        return;
+    }
+
+    try {
+        const enderecos = await verificarEnderecosUsuario(usuario.codUsuario);
+        if (!enderecos || enderecos.length === 0) {
+            // Usuário não tem endereços - mostrar modal para adicionar
+            mostrarModalAdicionarEndereco();
+            return;
+        }
+    } catch (error) {
+        console.error('Erro ao verificar endereços:', error);
+        // Em caso de erro, continua com checkout (fallback)
     }
 
     document.getElementById('checkout-modal').style.display = 'flex';
@@ -747,6 +770,12 @@ async function simularConfirmacaoPedido() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function () {
+    // Verificar se estamos na página do carrinho
+    if (!isCarrinhoPage()) {
+        console.log('🚫 Script carrinho.js não executado - não estamos na página do carrinho');
+        return;
+    }
+
     // Verificar login
     if (!verificarERedirecionar()) {
         return;

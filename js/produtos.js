@@ -430,22 +430,23 @@ function criarCardProduto(produto) {
     const precoFinal = calcularPrecoComDesconto(produto.preco, produto.promocao);
     const temPromocao = produto.promocao && produto.promocao > 0;
     const estaAtivo = produto.ativo !== false;
+    const estaFavoritado = verificarSeFavoritado(produto.codProduto);
 
     return `
-        <div class="product-card ${temPromocao ? 'featured' : ''} ${!estaAtivo ? 'disabled' : ''}" 
+        <div class="product-card ${temPromocao ? 'featured' : ''} ${!estaAtivo ? 'disabled' : ''}"
              data-id="${produto.codProduto}">
             ${temPromocao ? `<div class="product-badge">-${produto.promocao}%</div>` : ''}
             ${!estaAtivo ? `<div class="product-badge unavailable">INDISPONÍVEL</div>` : ''}
-            
+
             <div class="product-image">
-                <img src="${produto.imagem}" alt="${produto.nome}" 
+                <img src="${produto.imagem}" alt="${produto.nome}"
                      onerror="this.src='https://via.placeholder.com/300x300/2a2a2a/666666?text=Imagem+Não+Disponível'">
             </div>
-            
+
             <h3 class="product-name">${produto.nome}</h3>
-            
+
             <p class="product-description">${produto.descricao}</p>
-            
+
             <div class="product-price">
                 ${temPromocao ? `
                     <span class="old-price">R$ ${produto.preco.toFixed(2)}</span>
@@ -454,24 +455,42 @@ function criarCardProduto(produto) {
                     <span>R$ ${produto.preco.toFixed(2)}</span>
                 `}
             </div>
-            
+
             <div class="product-info">
                 <span class="product-size">Tamanho: ${produto.tamanho}</span>
                 <span class="product-material">${produto.material}</span>
             </div>
-            
+
             <div class="product-actions">
-                <button class="btn-add-cart" 
-                        onclick="adicionarAoCarrinho(${produto.codProduto})" 
+                <button class="btn-add-cart"
+                        onclick="adicionarAoCarrinho(${produto.codProduto})"
                         ${!estaAtivo ? 'disabled' : ''}>
                     ${estaAtivo ? '🛒 Adicionar' : '❌ Indisponível'}
                 </button>
-                <button class="btn-favorite" onclick="adicionarAosFavoritos(${produto.codProduto})">
+                <button class="btn-favorite ${estaFavoritado ? 'favoritado' : ''}"
+                        onclick="adicionarAosFavoritos(${produto.codProduto})"
+                        title="${estaFavoritado ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">
                     ♥
                 </button>
             </div>
         </div>
     `;
+}
+
+// Verificar se produto está favoritado
+function verificarSeFavoritado(idProduto) {
+    // Usar a função do sistema de favoritos se disponível
+    if (typeof window.verificarFavorito === 'function') {
+        return window.verificarFavorito(idProduto);
+    }
+
+    // Fallback: implementação básica usando localStorage
+    const usuario = verificarLogin();
+    if (!usuario) return false;
+
+    const chaveFavoritos = `favoritos_${usuario.codUsuario}`;
+    const favoritos = JSON.parse(localStorage.getItem(chaveFavoritos) || '[]');
+    return favoritos.includes(idProduto);
 }
 
 // Filtrar produtos (all, promocoes)
@@ -507,36 +526,97 @@ function calcularPrecoComDesconto(preco, descontoPercentual) {
 }
 
 // Adicionar aos favoritos
-function adicionarAosFavoritos(idProduto) {
+async function adicionarAosFavoritos(idProduto) {
+    // Usar a função completa do sistema de favoritos se disponível
+    if (typeof window.adicionarAosFavoritos === 'function') {
+        await window.adicionarAosFavoritos(idProduto);
+        // Atualizar UI após adicionar/remover
+        setTimeout(() => {
+            if (document.getElementById('products-grid')) {
+                carregarProdutos();
+            }
+        }, 100);
+        return;
+    }
+
+    // Fallback: implementação básica usando localStorage
     if (!verificarLogin()) {
         alert('⚠️ Faça login para adicionar aos favoritos');
         return;
     }
-    
+
     const botao = event.target;
-    const estaFavoritado = botao.style.color === 'var(--accent1)';
-    
+    const estaFavoritado = botao.classList.contains('favoritado');
+
+    // Atualizar UI imediatamente
     if (estaFavoritado) {
-        botao.style.color = 'var(--muted)';
+        botao.classList.remove('favoritado');
         botao.title = 'Adicionar aos favoritos';
         console.log('❤️ Removido dos favoritos:', idProduto);
     } else {
-        botao.style.color = 'var(--accent1)';
+        botao.classList.add('favoritado');
         botao.title = 'Remover dos favoritos';
         console.log('💚 Adicionado aos favoritos:', idProduto);
     }
-    
-    // Salvar no localStorage (implementação temporária)
-    const favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+
+    // Salvar no localStorage
+    const usuario = verificarLogin();
+    const chaveFavoritos = `favoritos_${usuario.codUsuario}`;
+    const favoritos = JSON.parse(localStorage.getItem(chaveFavoritos) || '[]');
     const index = favoritos.indexOf(idProduto);
-    
+
     if (index > -1) {
         favoritos.splice(index, 1);
     } else {
         favoritos.push(idProduto);
     }
-    
-    localStorage.setItem('favoritos', JSON.stringify(favoritos));
+
+    localStorage.setItem(chaveFavoritos, JSON.stringify(favoritos));
+
+    // Mostrar notificação
+    mostrarNotificacaoFavoritos(estaFavoritado ? 'Produto removido dos favoritos!' : 'Produto adicionado aos favoritos!', estaFavoritado ? 'info' : 'success');
+}
+
+// Função auxiliar para mostrar notificações de favoritos
+function mostrarNotificacaoFavoritos(mensagem, tipo = 'info') {
+    // Criar elemento de notificação se não existir
+    let notificacao = document.getElementById('notificacao-favoritos');
+    if (!notificacao) {
+        notificacao = document.createElement('div');
+        notificacao.id = 'notificacao-favoritos';
+        notificacao.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: var(--radius);
+            color: white;
+            font-family: 'Share Tech Mono', monospace;
+            z-index: 1000;
+            max-width: 300px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass);
+        `;
+        document.body.appendChild(notificacao);
+    }
+
+    // Definir cor baseada no tipo
+    const cores = {
+        success: 'var(--accent2)',
+        error: 'var(--accent1)',
+        warning: 'var(--accent3)',
+        info: 'var(--accent4)'
+    };
+
+    notificacao.style.background = cores[tipo] || cores.info;
+    notificacao.textContent = mensagem;
+    notificacao.style.display = 'block';
+
+    // Esconder após 3 segundos
+    setTimeout(() => {
+        notificacao.style.display = 'none';
+    }, 3000);
 }
 
 // Mostrar login requerido

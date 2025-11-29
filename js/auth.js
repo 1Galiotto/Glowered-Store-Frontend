@@ -165,6 +165,15 @@ async function alterarSenha(senhaAtual, novaSenha) {
     }
 }
 
+// Obter headers de autenticação
+function getAuthHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+    };
+}
+
 // Verificar permissões de admin
 function isAdmin() {
     const usuario = verificarLogin();
