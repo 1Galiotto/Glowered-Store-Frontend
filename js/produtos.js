@@ -264,8 +264,7 @@ async function carregarProdutos() {
                 throw new Error(`API retornou status ${response.status}`);
             }
         } else {
-            console.log('⚠️ Usando dados de fallback');
-            produtos = API_FALLBACK_DATA.produtos;
+            throw new Error('API offline - não é possível carregar produtos sem conexão com o backend');
         }
 
         produtosCarregados = produtos;
@@ -279,7 +278,6 @@ async function carregarProdutos() {
     } catch (err) {
         console.error('❌ Erro ao carregar produtos:', err);
         mostrarErro(err, elements);
-        usarModoDemo(elements);
     }
 }
 
@@ -315,9 +313,6 @@ function mostrarErro(erro, elements) {
                     <button class="btn btn-primary" onclick="carregarProdutos()">
                         🔄 TENTAR NOVAMENTE
                     </button>
-                    <button class="btn btn-secondary" onclick="usarModoDemo()">
-                        🎮 USAR MODO DEMO
-                    </button>
                 </div>
             </div>
         `;
@@ -351,27 +346,7 @@ function limparErro(elements) {
     }
 }
 
-// Modo demo
-function usarModoDemo(elements = null) {
-    if (!elements) elements = inicializarElementosDOM();
-    if (!elements) return;
 
-    console.log('🎮 Iniciando modo demo...');
-    produtosCarregados = API_FALLBACK_DATA.produtos;
-    produtosFiltrados = API_FALLBACK_DATA.produtos;
-    
-    exibirProdutos(produtosCarregados, elements.productsGrid);
-    exibirPromocoes(produtosCarregados, elements.promoGrid);
-    atualizarTitulos(produtosCarregados, elements);
-    esconderLoading(elements);
-    
-    if (!localStorage.getItem('demo_alert_shown')) {
-        setTimeout(() => {
-            alert('🔧 Modo Demo Ativado\n\nUse dados fictícios para testar a aplicação.');
-            localStorage.setItem('demo_alert_shown', 'true');
-        }, 500);
-    }
-}
 
 // Exibir produtos no grid
 function exibirProdutos(produtosParaExibir, gridElement) {
