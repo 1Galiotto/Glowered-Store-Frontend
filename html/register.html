@@ -70,6 +70,12 @@
                     return;
                 }
 
+                // Validar CPF
+                if (!validarCPF(userData.cpf)) {
+                    showError('Por favor, insira um CPF válido.');
+                    return;
+                }
+
                 if (!isValidEmail(userData.email)) {
                     showError('Por favor, insira um email válido.');
                     return;
