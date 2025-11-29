@@ -527,54 +527,79 @@ function calcularPrecoComDesconto(preco, descontoPercentual) {
 
 // Adicionar aos favoritos
 async function adicionarAosFavoritos(idProduto) {
-    // Usar a função completa do sistema de favoritos se disponível
-    if (typeof window.adicionarAosFavoritos === 'function') {
-        await window.adicionarAosFavoritos(idProduto);
-        // Atualizar UI após adicionar/remover
+    const usuario = verificarLogin();
+    if (!usuario) {
+        alert('⚠️ Faça login para adicionar aos favoritos');
+        return;
+    }
+
+    try {
+        const botao = event.target;
+        const estaFavoritado = botao.classList.contains('favoritado');
+
+        // Tentar API primeiro
+        const apiOnline = await verificarConexaoAPI();
+
+        if (apiOnline) {
+            const method = estaFavoritado ? 'DELETE' : 'POST';
+            const url = estaFavoritado
+                ? `${API_BASE_URL}/favoritos/${usuario.codUsuario}/${idProduto}`
+                : `${API_BASE_URL}/favoritos`;
+
+            const body = estaFavoritado ? null : JSON.stringify({
+                idUsuario: usuario.codUsuario,
+                idProduto: idProduto
+            });
+
+            const response = await fetch(url, {
+                method: method,
+                headers: getAuthHeaders(),
+                body: body
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro na API');
+            }
+        }
+
+        // Sempre atualizar localStorage como backup
+        const chaveFavoritos = `favoritos_${usuario.codUsuario}`;
+        const favoritos = JSON.parse(localStorage.getItem(chaveFavoritos) || '[]');
+        const index = favoritos.indexOf(idProduto);
+
+        if (estaFavoritado) {
+            // Remover dos favoritos
+            if (index > -1) {
+                favoritos.splice(index, 1);
+            }
+            botao.classList.remove('favoritado');
+            botao.title = 'Adicionar aos favoritos';
+            console.log('❤️ Removido dos favoritos:', idProduto);
+            mostrarNotificacaoFavoritos('Produto removido dos favoritos!', 'info');
+        } else {
+            // Adicionar aos favoritos
+            if (index === -1) {
+                favoritos.push(idProduto);
+            }
+            botao.classList.add('favoritado');
+            botao.title = 'Remover dos favoritos';
+            console.log('💚 Adicionado aos favoritos:', idProduto);
+            mostrarNotificacaoFavoritos('Produto adicionado aos favoritos!', 'success');
+        }
+
+        localStorage.setItem(chaveFavoritos, JSON.stringify(favoritos));
+
+        // Atualizar UI se necessário
         setTimeout(() => {
             if (document.getElementById('products-grid')) {
                 carregarProdutos();
             }
         }, 100);
-        return;
+
+    } catch (err) {
+        console.error('Erro ao gerenciar favoritos:', err);
+        mostrarNotificacaoFavoritos('Erro ao atualizar favoritos', 'error');
     }
-
-    // Fallback: implementação básica usando localStorage
-    if (!verificarLogin()) {
-        alert('⚠️ Faça login para adicionar aos favoritos');
-        return;
-    }
-
-    const botao = event.target;
-    const estaFavoritado = botao.classList.contains('favoritado');
-
-    // Atualizar UI imediatamente
-    if (estaFavoritado) {
-        botao.classList.remove('favoritado');
-        botao.title = 'Adicionar aos favoritos';
-        console.log('❤️ Removido dos favoritos:', idProduto);
-    } else {
-        botao.classList.add('favoritado');
-        botao.title = 'Remover dos favoritos';
-        console.log('💚 Adicionado aos favoritos:', idProduto);
-    }
-
-    // Salvar no localStorage
-    const usuario = verificarLogin();
-    const chaveFavoritos = `favoritos_${usuario.codUsuario}`;
-    const favoritos = JSON.parse(localStorage.getItem(chaveFavoritos) || '[]');
-    const index = favoritos.indexOf(idProduto);
-
-    if (index > -1) {
-        favoritos.splice(index, 1);
-    } else {
-        favoritos.push(idProduto);
-    }
-
-    localStorage.setItem(chaveFavoritos, JSON.stringify(favoritos));
-
-    // Mostrar notificação
-    mostrarNotificacaoFavoritos(estaFavoritado ? 'Produto removido dos favoritos!' : 'Produto adicionado aos favoritos!', estaFavoritado ? 'info' : 'success');
 }
 
 // Função auxiliar para mostrar notificações de favoritos
