@@ -415,7 +415,7 @@ function criarCardProduto(produto) {
 
             <div class="product-image">
                 <img src="${produto.imagem}" alt="${produto.nome}"
-                     onerror="this.src='https://via.placeholder.com/300x300/2a2a2a/666666?text=Imagem+Não+Disponível'">
+                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzJhMmEyYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NjY2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZW0gTsOjbyBEaXNwb25pYmVsPC90ZXh0Pjwvc3ZnPg=='; this.onerror=null;">
             </div>
 
             <h3 class="product-name">${produto.nome}</h3>
@@ -663,5 +663,4 @@ if (typeof window !== 'undefined') {
     window.adicionarAoCarrinho = adicionarAoCarrinho;
     window.adicionarAosFavoritos = adicionarAosFavoritos;
     window.carregarProdutos = carregarProdutos;
-    window.usarModoDemo = usarModoDemo;
 }
