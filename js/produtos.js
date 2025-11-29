@@ -414,8 +414,7 @@ function criarCardProduto(produto) {
             ${!estaAtivo ? `<div class="product-badge unavailable">INDISPONÍVEL</div>` : ''}
 
             <div class="product-image">
-                <img src="${produto.imagem}" alt="${produto.nome}"
-                     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzJhMmEyYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2NjY2NjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbWFnZW0gTsOjbyBEaXNwb25pYmVsPC90ZXh0Pjwvc3ZnPg=='; this.onerror=null;">
+                <img src="${produto.imagem}" alt="${produto.nome}">
             </div>
 
             <h3 class="product-name">${produto.nome}</h3>
