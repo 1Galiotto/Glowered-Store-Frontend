@@ -84,7 +84,7 @@ async function adicionarAoCarrinho(idProduto) {
         const usuario = verificarLogin();
         if (!usuario) {
             alert('⚠️ Faça login para adicionar produtos ao carrinho');
-            window.location.href = './login.html';
+            window.location.href = './html/login.html';
             return;
         }
 
@@ -804,7 +804,7 @@ function debugCarrinho() {
 function verificarERedirecionar() {
     const usuario = verificarLogin();
     if (!usuario) {
-        window.location.href = './login.html';
+        window.location.href = './html/login.html';
         return false;
     }
     return true;
