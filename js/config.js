@@ -187,17 +187,33 @@ async function verificarConexaoAPI() {
 
     try {
         console.log('🌐 Verificando conexão com API...');
-        const response = await fetch(`${API_BASE_URL}/produtos`, {
+
+        // Primeiro tentar endpoint público de health check
+        let response = await fetch(`${API_BASE_URL}/health`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        
+
+        // Se health check não existir, tentar produtos com auth
+        if (!response.ok) {
+            const token = localStorage.getItem('token');
+            if (token) {
+                response = await fetch(`${API_BASE_URL}/produtos`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            }
+        }
+
         const estaOnline = response.ok;
         console.log(estaOnline ? '✅ API Online' : '❌ API Offline');
         return estaOnline;
-        
+
     } catch (error) {
         console.log('❌ Erro na conexão com API:', error.message);
         return false;
