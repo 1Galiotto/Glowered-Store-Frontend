@@ -30,19 +30,43 @@ async function carregarFavoritos() {
             });
 
             if (response.ok) {
-                favoritos = await response.json();
-                console.log('✅ Favoritos carregados da API:', favoritos);
-                console.log('Tipo de dados:', typeof favoritos, Array.isArray(favoritos) ? 'array' : 'não array');
+                const rawFavoritos = await response.json();
+                console.log('✅ Favoritos brutos da API:', rawFavoritos);
+                console.log('Primeiro item da resposta:', rawFavoritos[0]);
 
                 // Verificar se é um array
-                if (!Array.isArray(favoritos)) {
+                if (!Array.isArray(rawFavoritos)) {
                     console.warn('API não retornou array, tentando converter...');
-                    favoritos = [favoritos].filter(f => f);
+                    favoritos = [rawFavoritos].filter(f => f);
+                } else {
+                    favoritos = rawFavoritos;
                 }
 
-                // Filtrar produtos válidos
-                favoritos = favoritos.filter(f => f && typeof f === 'object');
-                console.log('Favoritos após filtragem:', favoritos.length);
+                // Extrair dados do produto de cada favorito
+                favoritos = favoritos.map(favorito => {
+                    console.log('Processando favorito:', favorito);
+                    if (favorito && favorito.produto) {
+                        console.log('Produto encontrado no favorito:', favorito.produto);
+                        // Retornar o produto com dados do favorito se necessário
+                        return {
+                            ...favorito.produto,
+                            codProduto: favorito.produto.codProduto || favorito.produto.id,
+                            dataFavorito: favorito.dataCriacao
+                        };
+                    } else if (favorito && typeof favorito === 'object') {
+                        // Talvez o produto já esteja no nível raiz
+                        console.log('Produto no nível raiz:', favorito);
+                        return {
+                            ...favorito,
+                            codProduto: favorito.codProduto || favorito.id
+                        };
+                    }
+                    console.warn('Favorito inválido:', favorito);
+                    return null;
+                }).filter(f => f !== null);
+
+                console.log('Produtos extraídos dos favoritos:', favoritos.length);
+                console.log('Primeiro produto extraído:', favoritos[0]);
             } else {
                 throw new Error(`API retornou status ${response.status}`);
             }
