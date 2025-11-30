@@ -636,11 +636,171 @@ footer {
 .footer-section a {
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
 }
 
 .footer-section a:hover {
   color: var(--accent3);
+  transform: translateX(5px);
+}
+
+.footer-section a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent3), var(--accent4));
+  transition: width 0.3s ease;
+}
+
+.footer-section a:hover::after {
+  width: 100%;
+}
+
+/* Admin Links Styles */
+.admin-mode .footer-section a {
+  color: var(--accent1);
+  transition: all 0.4s ease;
+}
+
+.admin-mode .footer-section a:hover {
+  color: var(--accent2);
+  transform: translateX(8px) scale(1.02);
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.admin-mode .footer-section a::after {
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  transition: width 0.4s ease;
+}
+
+/* Enhanced Page Transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  transition: background 0.5s ease;
+}
+
+main {
+  transition: all 0.4s ease;
+}
+
+.product-card,
+.category-card,
+.btn,
+.hero,
+.sobre-section,
+.contato-form,
+.politica-section {
+  transition: all 0.4s ease;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Loading states with transitions */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced hover effects */
+.product-card:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: var(--glow-purple), 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.category-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: var(--glow-cyan), 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+.hero:hover {
+  transform: scale(1.01);
+  box-shadow: var(--accent3) 0 0 30px, 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Admin mode enhancements */
+.admin-mode {
+  --accent1: #ff4444;
+  --accent2: #ff8888;
+  --accent3: #44ffff;
+  --accent4: #8888ff;
+}
+
+.admin-mode header {
+  border-bottom: 2px solid var(--accent1);
+  box-shadow: var(--accent1) 0 0 25px;
+}
+
+.admin-mode .product-card:hover {
+  border-color: var(--accent1);
+  box-shadow: 0 0 25px rgba(255, 68, 68, 0.4), 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.admin-mode .btn-primary {
+  background: linear-gradient(45deg, var(--accent1), var(--accent4));
+}
+
+.admin-mode .btn-primary:hover {
+  background: linear-gradient(45deg, var(--accent2), var(--accent3));
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+}
+
+/* Clean transitions for all interactive elements */
+input, select, textarea, button {
+  transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  transform: scale(1.01);
+}
+
+button:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Page transition effects */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: pageEnter 0.5s ease-out forwards;
+}
+
+@keyframes pageEnter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .social-links {
