@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Glowered Store - Contato">
+    <meta name="keywords" content="contato, suporte, glowered, loja">
+    <meta name="author" content="Glowered Store">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="shortcut icon" href="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" type="image/x-icon">
+    <script src="../js/auth.js" defer></script>
+    <title>Glowered Store - Contato</title>
+</head>
+
+<body>
+    <header>
+        <nav aria-label="Navegação principal">
+            <div class="nav-container">
+                <!-- Logo e Título à esquerda -->
+                <div id="imgTitle" role="banner">
+                    <a href="../index.html">
+                        <img src="https://i.ibb.co/Kcjh5G8b/logo-No-Background.png" alt="Glowered Store Logo" width="50" height="50">
+                    </a>
+                    <h1><span class="brand-green">Glowered</span> <span class="brand-purple">Store</span></h1>
+                </div>
+                
+                <!-- Nome da página no centro -->
+                <div class="search-container" style="justify-content: center;">
+                    <h2 style="color: var(--accent3); margin: 0;">CONTATO</h2>
+                </div>
+
+                <!-- Ações do usuário à direita -->
+                <div class="header-actions">
+                    <button id="home-btn" aria-label="Voltar para loja">
+                        <img src="https://i.ibb.co/hJZbf1VX/undo.png" alt="">
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" aria-labelledby="contato-title">
+            <div class="hero-content">
+                <h2 id="contato-title">ENTRE EM <span class="brand-purple">CONTATO</span></h2>
+                <p class="hero-subtitle">Estamos aqui para ajudar você</p>
+            </div>
+        </section>
+
+        <div class="contato-content">
+            <div class="contato-info">
+                <div class="info-section">
+                    <h3>📧 E-mail</h3>
+                    <p>suporte@gloweredstore.com</p>
+                    <p>Resposta em até 24 horas</p>
+                </div>
+
+                <div class="info-section">
+                    <h3>📱 Telefone</h3>
+                    <p>(11) 9999-9999</p>
+                    <p>Segunda a Sexta, 9h às 18h</p>
+                </div>
+
+                <div class="info-section">
+                    <h3>📍 Endereço</h3>
+                    <p>Rua da Inovação, 123</p>
+                    <p>São Paulo - SP, 01234-567</p>
+                </div>
+
+                <div class="info-section">
+                    <h3>🕒 Horário de Atendimento</h3>
+                    <p>Segunda a Sexta: 9h às 18h</p>
+                    <p>Sábado: 9h às 12h</p>
+                    <p>Domingo: Fechado</p>
+                </div>
+            </div>
+
+            <div class="contato-form">
+                <h3>Envie sua Mensagem</h3>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="nome">Nome *</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-mail *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="assunto">Assunto *</label>
+                        <select id="assunto" name="assunto" required>
+                            <option value="">Selecione um assunto</option>
+                            <option value="duvida">Dúvida sobre produto</option>
+                            <option value="pedido">Status do pedido</option>
+                            <option value="devolucao">Devolução/Troca</option>
+                            <option value="sugestao">Sugestão</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mensagem">Mensagem *</label>
+                        <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Enviar Mensagem</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Glowered Store</h3>
+                <p>Sua loja de roupas e acessórios premium.</p>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Glowered Store. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
