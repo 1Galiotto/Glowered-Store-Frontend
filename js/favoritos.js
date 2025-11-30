@@ -69,7 +69,7 @@ async function carregarFavoritos() {
 
     } catch (err) {
         console.error('❌ Erro ao carregar favoritos:', err);
-        mostrarErro(err);
+        // Não mostrar erro para o usuário, apenas usar modo demo
         usarModoDemoFavoritos();
     }
 }
@@ -84,7 +84,8 @@ function exibirFavoritos(produtos) {
 
 // Criar card de produto favorito
 function criarCardFavorito(produto) {
-    const precoFinal = calcularPrecoComDesconto(produto.preco, produto.promocao);
+    const preco = produto.preco && typeof produto.preco === 'number' ? produto.preco : 0;
+    const precoFinal = calcularPrecoComDesconto(preco, produto.promocao);
     const temPromocao = produto.promocao && produto.promocao > 0;
     const estaAtivo = produto.ativo !== false;
 
@@ -112,10 +113,10 @@ function criarCardFavorito(produto) {
 
             <div class="product-price">
                 ${temPromocao ? `
-                    <span class="old-price">R$ ${produto.preco.toFixed(2)}</span>
+                    <span class="old-price">R$ ${preco.toFixed(2)}</span>
                     <span class="new-price">R$ ${precoFinal.toFixed(2)}</span>
                 ` : `
-                    <span>R$ ${produto.preco.toFixed(2)}</span>
+                    <span>R$ ${preco.toFixed(2)}</span>
                 `}
             </div>
 
