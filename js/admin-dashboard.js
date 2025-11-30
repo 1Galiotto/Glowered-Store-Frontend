@@ -44,11 +44,11 @@ async function carregarDashboard() {
 
         // Processar dados
         dashboardData = {
-            todosPedidos: Array.isArray(todosPedidos.cupons) ? todosPedidos.cupons : todosPedidos,
-            todosClientes: todosClientes,
-            todosProdutos: todosProdutos,
-            todosCupons: Array.isArray(todosCupons.cupons) ? todosCupons.cupons : todosCupons,
-            todosEstoques: todosEstoques
+            todosPedidos: Array.isArray(todosPedidos) ? todosPedidos : [],
+            todosClientes: Array.isArray(todosClientes) ? todosClientes : [],
+            todosProdutos: Array.isArray(todosProdutos) ? todosProdutos : [],
+            todosCupons: Array.isArray(todosCupons) ? todosCupons : [],
+            todosEstoques: Array.isArray(todosEstoques) ? todosEstoques : []
         };
 
         console.log('✅ Dashboard carregado:', dashboardData);
