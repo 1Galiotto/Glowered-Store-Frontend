@@ -31,7 +31,18 @@ async function carregarFavoritos() {
 
             if (response.ok) {
                 favoritos = await response.json();
-                console.log('✅ Favoritos carregados da API:', favoritos.length);
+                console.log('✅ Favoritos carregados da API:', favoritos);
+                console.log('Tipo de dados:', typeof favoritos, Array.isArray(favoritos) ? 'array' : 'não array');
+
+                // Verificar se é um array
+                if (!Array.isArray(favoritos)) {
+                    console.warn('API não retornou array, tentando converter...');
+                    favoritos = [favoritos].filter(f => f);
+                }
+
+                // Filtrar produtos válidos
+                favoritos = favoritos.filter(f => f && typeof f === 'object');
+                console.log('Favoritos após filtragem:', favoritos.length);
             } else {
                 throw new Error(`API retornou status ${response.status}`);
             }
@@ -84,6 +95,12 @@ function exibirFavoritos(produtos) {
 
 // Criar card de produto favorito
 function criarCardFavorito(produto) {
+    // Verificar se produto existe
+    if (!produto || typeof produto !== 'object') {
+        console.warn('Produto inválido:', produto);
+        return '';
+    }
+
     const preco = produto.preco && typeof produto.preco === 'number' ? produto.preco : 0;
     const precoFinal = calcularPrecoComDesconto(preco, produto.promocao);
     const temPromocao = produto.promocao && produto.promocao > 0;
