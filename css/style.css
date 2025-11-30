@@ -35,7 +35,7 @@
     font-size: 0.9rem;
   }
 }
-=======
+
 /* Responsividade para favoritos */
 @media (max-width: 768px) {
   #favorites-btn img {
