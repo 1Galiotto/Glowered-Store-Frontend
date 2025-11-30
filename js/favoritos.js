@@ -45,23 +45,41 @@ async function carregarFavoritos() {
                 // Extrair dados do produto de cada favorito
                 favoritos = favoritos.map(favorito => {
                     console.log('Processando favorito:', favorito);
+
+                    let produto = null;
+
+                    // Tentar diferentes estruturas possíveis
                     if (favorito && favorito.produto) {
-                        console.log('Produto encontrado no favorito:', favorito.produto);
-                        // Retornar o produto com dados do favorito se necessário
+                        // Estrutura: { produto: {...} }
+                        console.log('Produto encontrado em favorito.produto:', favorito.produto);
+                        produto = favorito.produto;
+                    } else if (favorito && typeof favorito === 'object' && favorito.codProduto) {
+                        // Estrutura: produto diretamente no favorito
+                        console.log('Produto no nível raiz do favorito:', favorito);
+                        produto = favorito;
+                    } else if (favorito && typeof favorito === 'object' && favorito.id) {
+                        // Estrutura alternativa com 'id' em vez de 'codProduto'
+                        console.log('Produto com id no nível raiz:', favorito);
+                        produto = { ...favorito, codProduto: favorito.id };
+                    }
+
+                    if (produto) {
+                        // Garantir que temos os campos necessários
                         return {
-                            ...favorito.produto,
-                            codProduto: favorito.produto.codProduto || favorito.produto.id,
+                            codProduto: produto.codProduto || produto.id,
+                            nome: produto.nome || 'Nome não disponível',
+                            descricao: produto.descricao || 'Descrição não disponível',
+                            preco: produto.preco || 0,
+                            promocao: produto.promocao || 0,
+                            imagem: produto.imagem || '',
+                            tamanho: produto.tamanho || 'N/A',
+                            material: produto.material || 'N/A',
+                            ativo: produto.ativo !== false,
                             dataFavorito: favorito.dataCriacao
                         };
-                    } else if (favorito && typeof favorito === 'object') {
-                        // Talvez o produto já esteja no nível raiz
-                        console.log('Produto no nível raiz:', favorito);
-                        return {
-                            ...favorito,
-                            codProduto: favorito.codProduto || favorito.id
-                        };
                     }
-                    console.warn('Favorito inválido:', favorito);
+
+                    console.warn('Favorito inválido ou sem produto:', favorito);
                     return null;
                 }).filter(f => f !== null);
 
