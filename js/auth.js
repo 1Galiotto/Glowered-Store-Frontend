@@ -1,5 +1,5 @@
 // Configurações da API
-const API_BASE = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'https://glowered-store-backend-production.up.railway.app';
+const API_BASE = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 'http://glowered-store-backend-production-bd02.up.railway.app';
 
 // Verificar se usuário está logado
 function verificarLogin() {
