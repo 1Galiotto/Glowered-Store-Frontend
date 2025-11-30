@@ -1,7 +1,7 @@
 // CONFIGURAÇÕES DA APLICAÇÃO - GLOBAL
 
 // URL da API - PRODUÇÃO
-const API_BASE_URL = 'https://glowered-store-backend-production.up.railway.app';
+const API_BASE_URL = 'https://glowered-store-backend-production-bd02.up.railway.app';
 
 // Modo de desenvolvimento (true para usar dados de fallback)
 const MODO_DEVELOPMENT = false;
