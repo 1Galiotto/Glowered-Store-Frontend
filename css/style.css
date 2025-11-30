@@ -2,18 +2,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Nosifer&display=swap');
 
 :root {
-  --bg-1: #07060a;
-  --bg-2: #0f0d14;
-  --bg-3: #201e1e;
-  --panel: rgba(10, 10, 12, 0.85);
-  --accent1: #ff2d95;
-  --accent2: #00e6a8;
-  --accent3: #8AED14;
-  --accent4: #7D20FF;
-  --muted: #a8a1a8;
-  --glass: rgba(255, 255, 255, 0.05);
-  --radius: 12px;
-  --glow: 0 0 15px rgba(255, 45, 149, 0.5);
+  --bg-1: #0a0a0f;
+  --bg-2: #111118;
+  --bg-3: #1a1a25;
+  --panel: rgba(15, 15, 25, 0.95);
+  --accent1: #ff0080;
+  --accent2: #00ff88;
+  --accent3: #00ffff;
+  --accent4: #8000ff;
+  --accent5: #ff8000;
+  --muted: #8888aa;
+  --glass: rgba(255, 255, 255, 0.08);
+  --radius: 16px;
+  --glow-purple: 0 0 20px rgba(128, 0, 255, 0.6), 0 0 40px rgba(128, 0, 255, 0.3);
+  --glow-green: 0 0 20px rgba(0, 255, 136, 0.6), 0 0 40px rgba(0, 255, 136, 0.3);
+  --glow-cyan: 0 0 20px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.3);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 /* General Reset */
@@ -148,7 +152,7 @@ header input[type="search"] {
 header input[type="search"]:focus {
   outline: none;
   border-color: var(--accent1);
-  box-shadow: var(--glow);
+  box-shadow: var(--glow-purple);
 }
 
 header input[type="search"]::placeholder {
@@ -230,7 +234,7 @@ header input[type="search"]::placeholder {
 #accountButton:hover {
   background: var(--accent1);
   transform: scale(1.05);
-  box-shadow: var(--glow);
+  box-shadow: var(--glow-purple);
 }
 
 #accountButton:hover img {
@@ -326,7 +330,7 @@ main {
 .btn-primary:hover {
   background: linear-gradient(45deg, var(--accent2), var(--accent3));
   transform: translateY(-2px);
-  box-shadow: var(--glow);
+  box-shadow: var(--glow-purple);
 }
 
 .btn-secondary {
@@ -369,7 +373,7 @@ main {
 .category-card:hover {
   transform: translateY(-5px);
   background: var(--panel);
-  box-shadow: var(--glow);
+  box-shadow: var(--glow-cyan);
 }
 
 .category-card img {
@@ -431,7 +435,7 @@ main {
 .product-card:hover {
   transform: translateY(-10px);
   border-color: var(--accent1);
-  box-shadow: var(--glow);
+  box-shadow: var(--glow-purple);
 }
 
 .product-badge {
@@ -568,7 +572,7 @@ main {
 .btn-add-cart:hover:not(:disabled) {
   background: linear-gradient(45deg, var(--accent2), var(--accent3));
   transform: translateY(-2px);
-  box-shadow: var(--glow);
+  box-shadow: var(--glow-purple);
 }
 
 .btn-add-cart:disabled {
@@ -1189,7 +1193,7 @@ footer {
 .product-badge-favorito:hover {
   background: var(--accent1);
   transform: scale(1.1);
-  box-shadow: var(--glow);
+  box-shadow: var(--glow-purple);
 }
 
 .btn-remover-favorito {
