@@ -829,6 +829,327 @@ function debugCarrinho() {
     console.log('Token:', localStorage.getItem('token'));
 }
 
+// Verificar se usuário tem endereços cadastrados
+async function verificarEnderecosUsuario(idUsuario) {
+    try {
+        const response = await fetch(`${API_BASE}/enderecos/usuario/${idUsuario}`, {
+            headers: getAuthHeaders()
+        });
+
+        if (response.ok) {
+            const enderecos = await response.json();
+            return enderecos;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.error('Erro ao verificar endereços:', error);
+        return [];
+    }
+}
+
+// Mostrar modal para adicionar endereço
+function mostrarModalAdicionarEndereco() {
+    const modal = document.createElement('div');
+    modal.id = 'endereco-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        backdrop-filter: blur(5px);
+    `;
+
+    modal.innerHTML = `
+        <div style="
+            background: var(--panel);
+            border: 1px solid var(--glass);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="color: var(--accent3); margin: 0;">📍 ADICIONAR ENDEREÇO DE ENTREGA</h3>
+                <button onclick="fecharModalEndereco()" style="
+                    background: none;
+                    border: none;
+                    color: var(--muted);
+                    font-size: 1.5rem;
+                    cursor: pointer;
+                    padding: 0.25rem;
+                ">×</button>
+            </div>
+
+            <p style="color: var(--muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                Para finalizar sua compra, precisamos de um endereço de entrega válido.
+            </p>
+
+            <form id="endereco-form" style="display: grid; gap: 1rem;">
+                <div>
+                    <label for="cep" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">CEP *</label>
+                    <input type="text" id="cep" placeholder="00000-000" style="
+                        width: 100%;
+                        padding: 0.75rem;
+                        border: 1px solid var(--muted);
+                        border-radius: var(--radius);
+                        background: var(--bg-2);
+                        color: white;
+                        font-family: 'Share Tech Mono', monospace;
+                    " required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="rua" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">RUA *</label>
+                        <input type="text" id="rua" placeholder="Nome da rua" style="
+                            width: 100%;
+                            padding: 0.75rem;
+                            border: 1px solid var(--muted);
+                            border-radius: var(--radius);
+                            background: var(--bg-2);
+                            color: white;
+                            font-family: 'Share Tech Mono', monospace;
+                        " required>
+                    </div>
+                    <div>
+                        <label for="numero" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">NÚMERO *</label>
+                        <input type="text" id="numero" placeholder="123" style="
+                            width: 100%;
+                            padding: 0.75rem;
+                            border: 1px solid var(--muted);
+                            border-radius: var(--radius);
+                            background: var(--bg-2);
+                            color: white;
+                            font-family: 'Share Tech Mono', monospace;
+                        " required>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="complemento" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">COMPLEMENTO</label>
+                    <input type="text" id="complemento" placeholder="Apto, bloco, etc. (opcional)" style="
+                        width: 100%;
+                        padding: 0.75rem;
+                        border: 1px solid var(--muted);
+                        border-radius: var(--radius);
+                        background: var(--bg-2);
+                        color: white;
+                        font-family: 'Share Tech Mono', monospace;
+                    ">
+                </div>
+
+                <div>
+                    <label for="bairro" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">BAIRRO *</label>
+                    <input type="text" id="bairro" placeholder="Nome do bairro" style="
+                        width: 100%;
+                        padding: 0.75rem;
+                        border: 1px solid var(--muted);
+                        border-radius: var(--radius);
+                        background: var(--bg-2);
+                        color: white;
+                        font-family: 'Share Tech Mono', monospace;
+                    " required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div>
+                        <label for="cidade" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">CIDADE *</label>
+                        <input type="text" id="cidade" placeholder="Nome da cidade" style="
+                            width: 100%;
+                            padding: 0.75rem;
+                            border: 1px solid var(--muted);
+                            border-radius: var(--radius);
+                            background: var(--bg-2);
+                            color: white;
+                            font-family: 'Share Tech Mono', monospace;
+                        " required>
+                    </div>
+                    <div>
+                        <label for="estado" style="display: block; margin-bottom: 0.5rem; color: var(--accent3); font-family: 'Share Tech Mono', monospace;">ESTADO *</label>
+                        <select id="estado" style="
+                            width: 100%;
+                            padding: 0.75rem;
+                            border: 1px solid var(--muted);
+                            border-radius: var(--radius);
+                            background: var(--bg-2);
+                            color: white;
+                            font-family: 'Share Tech Mono', monospace;
+                        " required>
+                            <option value="">Selecione</option>
+                            <option value="AC">AC</option>
+                            <option value="AL">AL</option>
+                            <option value="AP">AP</option>
+                            <option value="AM">AM</option>
+                            <option value="BA">BA</option>
+                            <option value="CE">CE</option>
+                            <option value="DF">DF</option>
+                            <option value="ES">ES</option>
+                            <option value="GO">GO</option>
+                            <option value="MA">MA</option>
+                            <option value="MT">MT</option>
+                            <option value="MS">MS</option>
+                            <option value="MG">MG</option>
+                            <option value="PA">PA</option>
+                            <option value="PB">PB</option>
+                            <option value="PR">PR</option>
+                            <option value="PE">PE</option>
+                            <option value="PI">PI</option>
+                            <option value="RJ">RJ</option>
+                            <option value="RN">RN</option>
+                            <option value="RS">RS</option>
+                            <option value="RO">RO</option>
+                            <option value="RR">RR</option>
+                            <option value="SC">SC</option>
+                            <option value="SP">SP</option>
+                            <option value="SE">SE</option>
+                            <option value="TO">TO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="endereco-message" style="display: none; padding: 0.75rem; border-radius: var(--radius); text-align: center; font-family: 'Share Tech Mono', monospace;"></div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="button" onclick="fecharModalEndereco()" class="btn btn-secondary" style="flex: 1;">
+                        CANCELAR
+                    </button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        SALVAR ENDEREÇO
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Configurar evento do formulário
+    const form = document.getElementById('endereco-form');
+    form.addEventListener('submit', salvarEndereco);
+
+    // Configurar busca de CEP
+    const cepInput = document.getElementById('cep');
+    cepInput.addEventListener('blur', buscarCep);
+}
+
+// Fechar modal de endereço
+function fecharModalEndereco() {
+    const modal = document.getElementById('endereco-modal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Buscar CEP via API
+async function buscarCep() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+
+    try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const data = await response.json();
+
+        if (!data.erro) {
+            document.getElementById('rua').value = data.logradouro || '';
+            document.getElementById('bairro').value = data.bairro || '';
+            document.getElementById('cidade').value = data.localidade || '';
+            document.getElementById('estado').value = data.uf || '';
+            document.getElementById('numero').focus();
+        }
+    } catch (error) {
+        console.error('Erro ao buscar CEP:', error);
+    }
+}
+
+// Salvar endereço
+async function salvarEndereco(event) {
+    event.preventDefault();
+
+    const usuario = verificarLogin();
+    if (!usuario) return;
+
+    const formData = {
+        idUsuario: usuario.codUsuario,
+        cep: document.getElementById('cep').value,
+        rua: document.getElementById('rua').value,
+        numero: document.getElementById('numero').value,
+        complemento: document.getElementById('complemento').value,
+        bairro: document.getElementById('bairro').value,
+        cidade: document.getElementById('cidade').value,
+        estado: document.getElementById('estado').value
+    };
+
+    // Validação básica
+    if (!formData.cep || !formData.rua || !formData.numero || !formData.bairro || !formData.cidade || !formData.estado) {
+        mostrarMensagemEndereco('Preencha todos os campos obrigatórios', 'error');
+        return;
+    }
+
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const textoOriginal = submitBtn.textContent;
+    submitBtn.textContent = 'SALVANDO...';
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(`${API_BASE}/enderecos`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            const endereco = await response.json();
+            console.log('✅ Endereço salvo:', endereco);
+            mostrarMensagemEndereco('Endereço salvo com sucesso!', 'success');
+
+            // Fechar modal após 2 segundos e iniciar checkout
+            setTimeout(() => {
+                fecharModalEndereco();
+                document.getElementById('checkout-modal').style.display = 'flex';
+                carregarPassoCheckout(1);
+            }, 2000);
+        } else {
+            const error = await response.json();
+            throw new Error(error.error || 'Erro ao salvar endereço');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar endereço:', error);
+        mostrarMensagemEndereco(error.message || 'Erro ao salvar endereço', 'error');
+        submitBtn.textContent = textoOriginal;
+        submitBtn.disabled = false;
+    }
+}
+
+// Mostrar mensagem no modal de endereço
+function mostrarMensagemEndereco(mensagem, tipo) {
+    const messageDiv = document.getElementById('endereco-message');
+    if (messageDiv) {
+        messageDiv.textContent = mensagem;
+        messageDiv.className = `endereco-message endereco-${tipo}`;
+        messageDiv.style.display = 'block';
+
+        if (tipo === 'success') {
+            messageDiv.style.background = 'rgba(0, 255, 136, 0.1)';
+            messageDiv.style.border = '1px solid var(--accent2)';
+            messageDiv.style.color = 'var(--accent2)';
+        } else {
+            messageDiv.style.background = 'rgba(255, 69, 149, 0.1)';
+            messageDiv.style.border = '1px solid var(--accent1)';
+            messageDiv.style.color = 'var(--accent1)';
+        }
+    }
+}
+
 // Função auxiliar para verificar e redirecionar
 function verificarERedirecionar() {
     const usuario = verificarLogin();
