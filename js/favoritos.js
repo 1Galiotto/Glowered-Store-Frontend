@@ -104,7 +104,7 @@ function criarCardFavorito(produto) {
 
             <div class="product-image">
                 <img src="${produto.imagem}" alt="${produto.nome}"
-                     onerror="this.src='https://via.placeholder.com/300x300/2a2a2a/666666?text=Imagem+Não+Disponível'">
+                     onerror="this.src='data:image/svg+xml;charset=UTF-8,%3csvg width%3d%22300%22 height%3d%22300%22 xmlns%3d%22http%3a//www.w3.org/2000/svg%22%3e%3crect width%3d%22300%22 height%3d%22300%22 fill%3d%22%23cccccc%22/%3e%3ctext x%3d%2250%25%22 y%3d%2250%25%22 font-family%3d%22Arial%22 font-size%3d%2214%22 fill%3d%22%23666666%22 text-anchor%3d%22middle%22 dy%3d%22.3em%22%3eImagem Nao Disponivel%3c/text%3e%3c/svg%3e'">
             </div>
 
             <h3 class="product-name">${produto.nome}</h3>
